@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import bee from './assets/bee.png';
 
 var width = Dimensions.get('window').width;
 
-const LandingPage = () => {
+const LandingPage = ({ navigation }) => {
   return (
       <View style={styles.container}>
           <View style={styles.topContainer}>
@@ -17,7 +18,7 @@ const LandingPage = () => {
             <Text style={styles.welcome}>Welcome to Riff</Text>
             <Text style={styles.topsubwelcome}>Join people who use Riff to talk with</Text>
             <Text style={styles.bottomsubwelcome}>communities and friends.</Text>
-              <TouchableOpacity style={styles.button} >
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register1')}>
                   <Text style={styles.buttonText}>Register</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
@@ -31,6 +32,9 @@ const LandingPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#36393e',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topContainer: {
     flex: 1,
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    padding: 10,
+    padding: 30,
   },
   name: {
       fontSize: 48,
@@ -53,7 +57,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 10,
     width: width * .8,
-    alignSelf: 'stretch',
     alignItems: 'center',
   },
   buttonText: {
