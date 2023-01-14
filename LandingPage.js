@@ -13,6 +13,9 @@ const LandingPage = ({ navigation }) => {
             <View style={styles.beeContainer}>
               <Image source={bee} style={styles.beeImg} />
             </View>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Friends')}>
+                  <Text style={styles.buttonText}>Temp Friends Button</Text>
+              </TouchableOpacity>
           </View>
           <View style={styles.bottomContainer}>
             <Text style={styles.welcome}>Welcome to Riff</Text>
