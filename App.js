@@ -38,12 +38,6 @@ export default function App() {
           options={{title: 'Register', headerShown: false}}
         />
 
-        <Stack.Screen
-          name="DM"
-          component={DM}
-          options={{title: 'DM', headerShown: false}}
-        />
-
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
