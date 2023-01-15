@@ -46,7 +46,7 @@ export default function App() {
         />
 
       </Stack.Navigator>
-      <StatusBar  barStyle="dark-content" translucent={true} />
+      <StatusBar style="auto" />
 
     </NavigationContainer>
   );
