@@ -5,7 +5,6 @@ import bee from '../assets/bee.png';
 
 var width = Dimensions.get('window').width;
 
-
 export default function Landing({ navigation }) {
   return (
     // <View style={styles.container}>
@@ -16,18 +15,18 @@ export default function Landing({ navigation }) {
       <View style={styles.topContainer}>
         <Text style={styles.name}>RIFF</Text>
         <View style={styles.beeContainer}>
-            <Image source={bee} style={styles.beeImg} />
+          <Image source={bee} style={styles.beeImg} />
         </View>
       </View>
       <View style={styles.bottomContainer}>
         <Text style={styles.welcome}>Welcome to Riff</Text>
         <Text style={styles.tagline}>Join people who use Riff to talk with communities and friends.</Text>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up')}>
-              <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign In')}>
-              <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up')}>
+            <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign In')}>
+            <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
