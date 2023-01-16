@@ -2,6 +2,7 @@
 // import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 // import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import './config/firebase';
 import RootNavigation from './navigation';
@@ -10,6 +11,7 @@ import RootNavigation from './navigation';
 // import Constants from 'expo-constants';
 // import axios from 'axios';
 // import Register1 from './Register1'
+// import MainPage from './MainPage'
 
 const Stack = createNativeStackNavigator();
 
