@@ -89,5 +89,3 @@ const styles = StyleSheet.create({
     bottomPadding: 10,
   },
 });
-
-export default LandingPage;
