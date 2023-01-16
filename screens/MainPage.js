@@ -55,6 +55,7 @@ const LeftDrawerScreen = () => {
         drawerType: 'back',
         swipeEnabled: true,
         swipeEdgeWidth: width/2,
+        headerShown: false,
         drawerStyle: {
           width: '85%',
           backgroundColor: '#36393e',
