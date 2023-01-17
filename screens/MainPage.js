@@ -27,14 +27,13 @@ const ChatScreen = () => {
   const [text, setText] = useState('');
   const [server, setServer] = useState(3);
   const [channel, setChannel] = useState(7);
-
   useEffect(() => {
-    axios.get(`http://${Constants.manifest?.extra?.apiUrl}:3000/messages/3/7`)
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/3/7`)
       .then(response => {
         setMessages(response.data);
       })
       .catch(error => {
-        console.log(error);
+        console.log('Error in chat screen ', error.message);
       });
   }, []);
 
@@ -138,7 +137,8 @@ const RightDrawerScreen = () => {
   );
 }
 
-const MainPage = ({ navigation }) => {
+const MainPage = ({ navigation, friends }) => {
+  // console.log('friends in main page', friends);
   return (
     <RightDrawerScreen />
   );

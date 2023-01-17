@@ -23,7 +23,7 @@ export default function SignUp({ navigation }) {
       setValue({
         ...value,
         error: 'Email and password are mandatory.'
-      })
+      });
       return;
     }
 
@@ -34,7 +34,7 @@ export default function SignUp({ navigation }) {
       setValue({
         ...value,
         error: error.message,
-      })
+      });
     }
   }
 
