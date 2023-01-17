@@ -62,7 +62,7 @@ const ChatScreen = () => {
           style={{marginLeft: 16}}
           data={messages}
           keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message} {item.id}</Text>}
+          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message}</Text>}
           />
         <TextInput
           style={{ backgroundColor: '#fff', height: 60 }}
