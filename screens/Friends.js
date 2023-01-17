@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line import/no-unresolved
 import {
   View,
@@ -8,6 +8,8 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+import Constants from 'expo-constants';
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
@@ -61,8 +63,18 @@ const styles = StyleSheet.create({
   },
 });
 
-function FriendsPage({ navigation }) {
-  const [friends, setFriends] = useState([
+function FriendScreen({ navigation }) {
+  const [friends, setFriends] = useState();
+  useEffect(() => {
+    axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/LeBob`)// look in app.config.js to configure this variable
+      .then((response) => {
+        setFriends(response.data);
+      })
+      .catch((err) => {
+        console.log('ERROR :', err.message);
+      });
+  }, []);
+  /*const [friends, setFriends] = useState([
     {
       name: 'friend1',
       avatar: '(AVATAR)',
@@ -88,7 +100,7 @@ function FriendsPage({ navigation }) {
       avatar: '(AVATAR)',
       online: true,
     },
-  ]);
+  ]);*/
   // todo add online/offline count to backend
   let onlineCount = 0;
   let offlineCount = 0;
@@ -101,9 +113,9 @@ function FriendsPage({ navigation }) {
   }
   return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
+      {/* <View style={styles.topBar}>
         <Text style={styles.sectionTitle}>Friends</Text>
-      </View>
+      </View> */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
           Online -
@@ -139,12 +151,12 @@ function FriendsPage({ navigation }) {
         ))}
       </View>
       <View style={styles.bottomBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate('  ')}>
           <Text style={styles.bottomText}>Home</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
 }
 
-export default FriendsPage;
+export default FriendScreen;
