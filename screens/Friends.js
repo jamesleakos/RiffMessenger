@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 // eslint-disable-next-line import/no-unresolved
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
   ScrollView,
   SectionList,
 } from 'react-native';
+import axios from 'axios';
+import Constants from 'expo-constants';
 
 const { width } = Dimensions.get('window');
 
@@ -74,134 +76,34 @@ const styles = StyleSheet.create({
 });
 
 function FriendsPage({ navigation }) {
+  const [testFriends, setTestFriends] = useState([{
+    title: 'Online',
+    data: [],
+  },
+  {
+    title: 'Offline',
+    data: [],
+  },
+  ]);
+  if (Constants.expoConfig.extra.apiUrl) {
+    useEffect(() => {
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${1}`)// look in app.config.js to configure this variable
+        .then((response) => {
+          const online = [];
+          for (let i = 0; i < response.data.length; i += 1) {
+            online.push(response.data[i].username);
+          }
+          testFriends[0].data = online;
+          // setTestFriends({ ...testFriends });
+          // console.log(testFriends);
+        })
+        .catch((err) => {
+          console.log('ERROR :', err.message);
+        });
+    }, []);
+  }
+  // console.log('friends from api: ', testFriends);
   const [friends, setFriends] = useState(
-  //   [
-  //   {
-  //     name: 'friend1',
-  //     avatar: '(AVATAR)',
-  //     online: false,
-  //   },
-  //   {
-  //     name: 'friend2',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend3',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend4',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend5',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend1',
-  //     avatar: '(AVATAR)',
-  //     online: false,
-  //   },
-  //   {
-  //     name: 'friend2',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend3',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend4',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend5',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend1',
-  //     avatar: '(AVATAR)',
-  //     online: false,
-  //   },
-  //   {
-  //     name: 'friend2',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend3',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend4',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend5',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend1',
-  //     avatar: '(AVATAR)',
-  //     online: false,
-  //   },
-  //   {
-  //     name: 'friend2',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend3',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend4',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend5',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend1',
-  //     avatar: '(AVATAR)',
-  //     online: false,
-  //   },
-  //   {
-  //     name: 'friend2',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend3',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend4',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  //   {
-  //     name: 'friend5',
-  //     avatar: '(AVATAR)',
-  //     online: true,
-  //   },
-  // ]
     [{
       title: 'Online',
       data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
@@ -209,77 +111,30 @@ function FriendsPage({ navigation }) {
     {
       title: 'Offline',
       data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
-    }]
+    }],
   );
   // todo add online/offline count to backend
-  let onlineCount = 0;
-  let offlineCount = 0;
-  for (let i = 0; i < friends.length; i += 1) {
-    if (friends[i].online) {
-      onlineCount += 1;
-    } else {
-      offlineCount += 1;
-    }
-  }
-  return (
+  return !testFriends[0].data.length > 1 ? null : (
     <View style={styles.container}>
       <View style={styles.topBar}>
         <Text style={styles.pageTitle}>Friends</Text>
       </View>
-      {/* <ScrollView style={styles.section}>
-        <View>
-          <Text style={styles.sectionTitle}>
-            Online -
-            {' '}
-            {onlineCount}
-          </Text>
-          {friends.map((friend, i) => (
-            !friend.online ? null
-              : (
-                <Text style={styles.userText} key={i}>
-                  {friend.avatar}
-                  {'  '}
-                  {friend.name}
-                </Text>
-              )
-          ))}
-        </View>
-        <View>
-          <Text style={styles.sectionTitle}>
-            Offline
-            {' '}
-            {offlineCount}
-          </Text>
-          {friends.map((friend, i) => (
-            friend.online ? null
-              : (
-                <Text style={styles.userText} key={i}>
-                  {friend.avatar}
-                  {'  '}
-                  {friend.name}
-                </Text>
-              )
-          ))}
-        </View>
-      </ScrollView> */}
       <SectionList
         style={styles.section}
-        sections={friends}
+        sections={testFriends}
         keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <Text style={styles.userText}>{item}</Text>
         )}
-        renderSectionHeader={({section: {title, data}}) => (
-          <Text style={styles.sectionTitle}>{title} - {data.length}</Text>
+        renderSectionHeader={({ section: { title, data } }) => (
+          <Text style={styles.sectionTitle}>
+            { title }
+            {' - '}
+            { data.length }
+          </Text>
         )}
-        stickySectionHeadersEnabled={true}
+        stickySectionHeadersEnabled
       />
-
-      {/* <View style={styles.bottomBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
-          <Text style={styles.bottomText}>Home</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 }
