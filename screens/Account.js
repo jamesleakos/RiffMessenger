@@ -14,7 +14,11 @@ import {
   Dimensions,
   Image,
   SectionList,
+  Button,
 } from 'react-native';
+import { getAuth, signOut } from 'firebase/auth';
+
+const auth = getAuth();
 
 const { width } = Dimensions.get('window');
 
@@ -72,10 +76,11 @@ function Account() {
             <Text style={styles.title}>{item}</Text>
           </View>
         )}
-        renderSectionHeader={({ section: { title }}) => (
+        renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.header}>{title}</Text>
         )}
       />
+      <Button title="Sign Out" buttonStyle={styles.item} onPress={() => signOut(auth)}/>
     </View>
   );
 }

@@ -50,7 +50,6 @@ export default function UserStack() {
         });
     }, []);
   }
-  const [testData, setTestData] = useState('testDataString');
   return (
     <NavigationContainer>
       {/* <Stack.Navigator>
