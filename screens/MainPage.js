@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -45,7 +45,7 @@ const RightDrawerContent = () => {
   );
 }
 
-const LeftDrawerScreen = () => {
+const LeftDrawerScreen = ({setDrawerStatus}) => {
   return (
     <LeftDrawer.Navigator
       id="LeftDrawer"
@@ -61,12 +61,20 @@ const LeftDrawerScreen = () => {
           backgroundColor: '#36393e',
         }
       }}>
-      <LeftDrawer.Screen name="Channel" component={ChatScreen} />
+      <LeftDrawer.Screen name="HomeScreen">
+        {(props) => <RightDrawerScreen {...props} setDrawerStatus={setDrawerStatus} />}
+      </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = () => {
+const RightDrawerScreen = ({setDrawerStatus}) => {
+  const drawerStatus = useDrawerStatus();
+  useEffect(() => {
+    setDrawerStatus(drawerStatus === 'open')
+  }, [drawerStatus])
+
+
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
@@ -82,14 +90,14 @@ const RightDrawerScreen = () => {
           backgroundColor: '#36393e',
         }
       }}>
-      <RightDrawer.Screen name="HomeDrawer" component={LeftDrawerScreen} />
+      <RightDrawer.Screen name="Channel" component={ChatScreen} />
     </RightDrawer.Navigator>
   );
 }
 
-const MainPage = ({ navigation }) => {
+const MainPage = ({ navigation, setDrawerStatus }) => {
   return (
-    <RightDrawerScreen />
+    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} />
   );
 };
 
