@@ -9,6 +9,7 @@ import {
   Image,
   ScrollView,
   SectionList,
+  SafeAreaView,
 } from 'react-native';
 import axios from 'axios';
 import Constants from 'expo-constants';
@@ -75,66 +76,41 @@ const styles = StyleSheet.create({
   },
 });
 
-function FriendsPage({ navigation }) {
-  const [testFriends, setTestFriends] = useState([{
-    title: 'Online',
-    data: [],
-  },
-  {
-    title: 'Offline',
-    data: [],
-  },
-  ]);
-  if (Constants.expoConfig.extra.apiUrl) {
-    useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${1}`)// look in app.config.js to configure this variable
-        .then((response) => {
-          const online = [];
-          for (let i = 0; i < response.data.length; i += 1) {
-            online.push(response.data[i].username);
-          }
-          testFriends[0].data = online;
-          // setTestFriends({ ...testFriends });
-          // console.log(testFriends);
-        })
-        .catch((err) => {
-          console.log('ERROR :', err.message);
-        });
-    }, []);
-  }
-  // console.log('friends from api: ', testFriends);
-  const [friends, setFriends] = useState(
-    [{
-      title: 'Online',
-      data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
-    },
-    {
-      title: 'Offline',
-      data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
-    }],
-  );
+function FriendsPage({ friends }) {
+  // const [friends, setFriends] = useState(
+  //   [{
+  //     title: 'Online',
+  //     data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
+  //   },
+  //   {
+  //     title: 'Offline',
+  //     data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
+  //   }],
+  // );
   // todo add online/offline count to backend
-  return !testFriends[0].data.length > 1 ? null : (
+  return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <Text style={styles.pageTitle}>Friends</Text>
-      </View>
-      <SectionList
-        style={styles.section}
-        sections={testFriends}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <Text style={styles.userText}>{item}</Text>
-        )}
-        renderSectionHeader={({ section: { title, data } }) => (
-          <Text style={styles.sectionTitle}>
-            { title }
-            {' - '}
-            { data.length }
-          </Text>
-        )}
-        stickySectionHeadersEnabled
-      />
+      <SafeAreaView>
+        <View style={styles.topBar}>
+          <Text style={styles.pageTitle}>Friends</Text>
+        </View>
+        <SectionList
+          style={styles.section}
+          sections={friends}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => (
+            <Text style={styles.userText}>{item}</Text>
+          )}
+          renderSectionHeader={({ section: { title, data } }) => (
+            <Text style={styles.sectionTitle}>
+              { title }
+              {' - '}
+              { data.length }
+            </Text>
+          )}
+          stickySectionHeadersEnabled
+        />
+      </SafeAreaView>
     </View>
   );
 }

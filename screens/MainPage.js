@@ -87,7 +87,8 @@ const RightDrawerScreen = () => {
   );
 }
 
-const MainPage = ({ navigation }) => {
+const MainPage = ({ navigation, friends }) => {
+  // console.log('friends in main page', friends);
   return (
     <RightDrawerScreen />
   );
