@@ -17,7 +17,7 @@ export default function HomeScreen() {
   //   },
   // })
 
-  // and then on the server side ... 
+  // and then on the server side ...
 
   // const admin = require('firebase-admin');
 
