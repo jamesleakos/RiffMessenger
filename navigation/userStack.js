@@ -2,7 +2,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import HomeScreen from '../screens/Home.js';
+import MainPage from '../screens/MainPage.js';
 
 const Stack = createStackNavigator();
 
@@ -10,7 +10,7 @@ export default function UserStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Main" component={MainPage} options={{title: 'Register', headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
