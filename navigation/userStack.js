@@ -8,7 +8,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
-import FriendsPage from '../screens/FriendsPage.js';
 import MainPage from '../screens/MainPage.js';
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
@@ -53,7 +52,7 @@ export default function UserStack() {
           tabBarStyle: { backgroundColor: '#36393e' }
         })}>
         <Tab.Screen name="Main" component={MainPage} />
-        <Tab.Screen name="Friends" component={FriendsPage} />
+        <Tab.Screen name="Friends" component={FriendScreen} />
         <Tab.Screen name="Profile" component={TempScreen} />
       </Tab.Navigator>
     </NavigationContainer>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // eslint-disable-next-line import/no-unresolved
 import {
   View,
@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
+  ScrollView,
+  SectionList,
 } from 'react-native';
-import Constants from 'expo-constants';
-import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 
@@ -29,12 +29,22 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#fff',
     fontSize: 18,
+    paddingBottom: 10,
+    paddingTop: 10,
+    width,
+    backgroundColor: '#36393e',
+    // position: 'sticky',
+  },
+  pageTitle: {
+    color: '#fff',
+    fontSize: 18,
     marginBottom: 10,
     marginTop: 10,
-    position: 'sticky',
+    // position: 'sticky',
   },
   section: {
     margin: 10,
+    width,
   },
   bottomText: {
     color: '#fff',
@@ -45,7 +55,7 @@ const styles = StyleSheet.create({
   topBar: {
     backgroundColor: '#17181e',
     width,
-    position: 'sticky',
+    // position: 'sticky',
     height: 90,
     display: 'flex',
     alignItems: 'center',
@@ -63,44 +73,144 @@ const styles = StyleSheet.create({
   },
 });
 
-function FriendScreen({ navigation }) {
-  const [friends, setFriends] = useState();
-  useEffect(() => {
-    axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/LeBob`)// look in app.config.js to configure this variable
-      .then((response) => {
-        setFriends(response.data);
-      })
-      .catch((err) => {
-        console.log('ERROR :', err.message);
-      });
-  }, []);
-  /*const [friends, setFriends] = useState([
-    {
-      name: 'friend1',
-      avatar: '(AVATAR)',
-      online: false,
+function FriendsPage({ navigation }) {
+  const [friends, setFriends] = useState(
+  //   [
+  //   {
+  //     name: 'friend1',
+  //     avatar: '(AVATAR)',
+  //     online: false,
+  //   },
+  //   {
+  //     name: 'friend2',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend3',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend4',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend5',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend1',
+  //     avatar: '(AVATAR)',
+  //     online: false,
+  //   },
+  //   {
+  //     name: 'friend2',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend3',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend4',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend5',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend1',
+  //     avatar: '(AVATAR)',
+  //     online: false,
+  //   },
+  //   {
+  //     name: 'friend2',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend3',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend4',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend5',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend1',
+  //     avatar: '(AVATAR)',
+  //     online: false,
+  //   },
+  //   {
+  //     name: 'friend2',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend3',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend4',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend5',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend1',
+  //     avatar: '(AVATAR)',
+  //     online: false,
+  //   },
+  //   {
+  //     name: 'friend2',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend3',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend4',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  //   {
+  //     name: 'friend5',
+  //     avatar: '(AVATAR)',
+  //     online: true,
+  //   },
+  // ]
+    [{
+      title: 'Online',
+      data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
     },
     {
-      name: 'friend2',
-      avatar: '(AVATAR)',
-      online: true,
-    },
-    {
-      name: 'friend3',
-      avatar: '(AVATAR)',
-      online: true,
-    },
-    {
-      name: 'friend4',
-      avatar: '(AVATAR)',
-      online: true,
-    },
-    {
-      name: 'friend5',
-      avatar: '(AVATAR)',
-      online: true,
-    },
-  ]);*/
+      title: 'Offline',
+      data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
+    }]
+  );
   // todo add online/offline count to backend
   let onlineCount = 0;
   let offlineCount = 0;
@@ -113,50 +223,65 @@ function FriendScreen({ navigation }) {
   }
   return (
     <View style={styles.container}>
-      {/* <View style={styles.topBar}>
-        <Text style={styles.sectionTitle}>Friends</Text>
-      </View> */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Online -
-          {' '}
-          {onlineCount}
-        </Text>
-        {friends.map((friend, i) => (
-          !friend.online ? null
-            : (
-              <Text style={styles.userText} key={i}>
-                {friend.avatar}
-                {'  '}
-                {friend.name}
-              </Text>
-            )
-        ))}
+      <View style={styles.topBar}>
+        <Text style={styles.pageTitle}>Friends</Text>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          Offline
-          {' '}
-          {offlineCount}
-        </Text>
-        {friends.map((friend, i) => (
-          friend.online ? null
-            : (
-              <Text style={styles.userText} key={i}>
-                {friend.avatar}
-                {'  '}
-                {friend.name}
-              </Text>
-            )
-        ))}
-      </View>
-      <View style={styles.bottomBar}>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('  ')}>
+      {/* <ScrollView style={styles.section}>
+        <View>
+          <Text style={styles.sectionTitle}>
+            Online -
+            {' '}
+            {onlineCount}
+          </Text>
+          {friends.map((friend, i) => (
+            !friend.online ? null
+              : (
+                <Text style={styles.userText} key={i}>
+                  {friend.avatar}
+                  {'  '}
+                  {friend.name}
+                </Text>
+              )
+          ))}
+        </View>
+        <View>
+          <Text style={styles.sectionTitle}>
+            Offline
+            {' '}
+            {offlineCount}
+          </Text>
+          {friends.map((friend, i) => (
+            friend.online ? null
+              : (
+                <Text style={styles.userText} key={i}>
+                  {friend.avatar}
+                  {'  '}
+                  {friend.name}
+                </Text>
+              )
+          ))}
+        </View>
+      </ScrollView> */}
+      <SectionList
+        style={styles.section}
+        sections={friends}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({item}) => (
+          <Text style={styles.userText}>{item}</Text>
+        )}
+        renderSectionHeader={({section: {title, data}}) => (
+          <Text style={styles.sectionTitle}>{title} - {data.length}</Text>
+        )}
+        stickySectionHeadersEnabled={true}
+      />
+
+      {/* <View style={styles.bottomBar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Landing')}>
           <Text style={styles.bottomText}>Home</Text>
-        </TouchableOpacity> */}
-      </View>
+        </TouchableOpacity>
+      </View> */}
     </View>
   );
 }
 
-export default FriendScreen;
+export default FriendsPage;
