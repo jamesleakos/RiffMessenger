@@ -25,11 +25,11 @@ const DATA = [
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
-  const [server, setServer] = useState(1);
-  const [channel, setChannel] = useState(1);
+  const [server, setServer] = useState(3);
+  const [channel, setChannel] = useState(7);
 
   useEffect(() => {
-    axios.get(`http://${Constants.manifest?.extra?.apiUrl}:3000/messages/1/1`)
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}:3000/messages/3/7`)
       .then(response => {
         setMessages(response.data);
       })
@@ -61,8 +61,8 @@ const ChatScreen = () => {
         <FlatList
           style={{marginLeft: 16}}
           data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message}</Text>}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message} {item.id}</Text>}
           />
         <TextInput
           style={{ backgroundColor: '#fff', height: 60 }}
