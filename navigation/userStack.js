@@ -8,7 +8,6 @@ import { View, Text, TouchableOpacity } from 'react-native';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
-import MainPage from '../screens/MainPage.js';
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
 
@@ -53,8 +52,13 @@ export default function UserStack() {
         })}>
         <Tab.Screen name="Main" component={MainPage} />
         <Tab.Screen name="Friends" component={FriendScreen} />
-        <Tab.Screen name="Profile" component={TempScreen} />
+        <Tab.Screen name="Profile" component={AccountScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
+
+// Paying for college, if I leave within the first 2 years I have to pay it back
+// 5,000 shraes of stock options
+// 50000 for the first 3 months then 55000
+// 10% bonus later in time
