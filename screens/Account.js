@@ -33,7 +33,10 @@ const styles = StyleSheet.create({
   },
   item: {
     padding: 10,
+    justifyContent: 'center',
     backgroundColor: '#17181e',
+    fontSize: 14,
+    height: 50,
     borderBottomWidth: 1,
     borderColor: '#36393e',
     color: '#fff',
@@ -51,18 +54,24 @@ const styles = StyleSheet.create({
   },
 });
 
-// const MenuButton = (content, route) => (
-//   <TouchableOpacity>
-//     <Text>{content}</Text>
-//   </TouchableOpacity>
-// );
+const MenuButton = (content, route) => (
+  <TouchableOpacity onPress={() => signOut(auth)}>
+    <Text style={styles.item}>{content}</Text>
+  </TouchableOpacity>
+);
 
 function Account() {
   let userName = 'tempName';
   const [pageData, setPageData] = useState([
     {
       title: userName,
-      data: ['Change Username', 'Change Email', 'Change Password', 'Delete Account', 'View Friend Requests'],
+      data: [
+        { text: 'Change Username', action: () => console.log('clicked') },
+        { text: 'Change Email', action: () => console.log('clicked') },
+        { text: 'Change Password', action: () => console.log('clicked') },
+        { text: 'Delete Account', action: () => console.log('clicked') },
+        { text: 'View Friends Request', action: () => console.log('clicked') },
+        { text: 'Sign Out', action: () => signOut(auth) }],
     },
   ]);
 
@@ -72,15 +81,14 @@ function Account() {
         sections={pageData}
         keyExtractor={(item, index) => item + index}
         renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item}</Text>
-          </View>
+          <TouchableOpacity style={styles.item} onPress={item.action}>
+            <Text style={styles.title}>{item.text}</Text>
+          </TouchableOpacity>
         )}
         renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.header}>{title}</Text>
         )}
       />
-      <Button title="Sign Out" buttonStyle={styles.item} onPress={() => signOut(auth)}/>
     </View>
   );
 }
