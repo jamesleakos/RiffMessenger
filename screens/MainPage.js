@@ -1,6 +1,10 @@
-import React, {useEffect} from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
+import Constants from 'expo-constants';
+import socket from '../utils/hooks/socket';
+import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import axios from 'axios';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -19,12 +23,59 @@ const DATA = [
 ];
 
 const ChatScreen = () => {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [server, setServer] = useState(3);
+  const [channel, setChannel] = useState(7);
+
+  useEffect(() => {
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}:3000/messages/3/7`)
+      .then(response => {
+        setMessages(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
+
+  socket.on('new_message', (message) => {
+    setMessages([...messages, message]);
+  });
+
+  const sendMessage = () => {
+    if (text === '') return;
+    const messageObj = {
+      message: text,
+      server_id: server,
+      channel_id: channel,
+      user_id: 1,
+      recipient_id: 0,
+    }
+    socket.emit('message', messageObj);
+    setText('');
+  };
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }}>
-      <Text style={{ color: '#fff' }}>CHAT GOES HERE</Text>
+       <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+        <FlatList
+          style={{marginLeft: 16}}
+          data={messages}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message}</Text>}
+          />
+        <TextInput
+          style={{ backgroundColor: '#fff', height: 60 }}
+          value={text}
+          onChangeText={setText}
+          placeholder="Type a message..."
+          />
+        <Button title="Send" onPress={sendMessage} />
+        </SafeAreaView>
     </View>
   );
-}
+};
+
 
 const RightDrawerContent = () => {
   return (
