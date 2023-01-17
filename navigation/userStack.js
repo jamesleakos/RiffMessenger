@@ -70,7 +70,6 @@ export default function UserStack() {
                 } else if (route.name === 'Profile') {
                   iconName = focused ? 'information-circle' : 'information-circle-outline';
                 }
-
             return <Ionicons name={iconName} size={size} color={color} />;
           },
           tabBarActiveTintColor: '#fff',
@@ -80,7 +79,7 @@ export default function UserStack() {
           tabBarStyle: { backgroundColor: '#36393e' }
         })}>
           <Tab.Screen name="Main">
-            {(props) => <MainPage { ...props } friends={friends} />}
+            {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
           <Tab.Screen name="Friends">
             {(props) => <FriendScreen { ...props } friends={friends} />}
@@ -101,22 +100,22 @@ export default function UserStack() {
               iconName = focused ? 'information-circle' : 'information-circle-outline';
             }
 
-        return <Ionicons name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: '#fff',
-      tabBarInactiveTintColor: '#fff',
-      headerShown: false,
-      tabBarShowLabel: false,
-      tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
-    })}>
-      <Tab.Screen name="Main">
-        {(props) => <MainPage { ...props } friends={friends} />}
-      </Tab.Screen>
-      <Tab.Screen name="Friends">
-        {(props) => <FriendScreen { ...props } friends={friends} />}
-      </Tab.Screen>
-      <Tab.Screen name="Profile" component={AccountScreen} />
-    </Tab.Navigator>
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#fff',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
+        })}>
+          <Tab.Screen name="Main">
+            {(props) => <MainPage { ...props } friends={friends} />}
+          </Tab.Screen>
+          <Tab.Screen name="Friends">
+            {(props) => <FriendScreen { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+          </Tab.Screen>
+          <Tab.Screen name="Profile" component={AccountScreen} />
+        </Tab.Navigator>}
     </NavigationContainer>
   );
 }
