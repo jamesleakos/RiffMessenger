@@ -64,10 +64,11 @@ const ChatScreen = () => {
           renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message}</Text>}
           />
         <TextInput
-          style={{ backgroundColor: '#fff', height: 60 }}
+          style={ styles.chatBar }
           value={text}
           onChangeText={setText}
           placeholder="Type a message..."
+          placeholderTextColor="#71757c"
           />
         <Button title="Send" onPress={sendMessage} />
         </SafeAreaView>
@@ -163,6 +164,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
+  chatBar: {
+    backgroundColor: '#292b2f',
+    height: 60,
+    width: width,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+  }
 });
 
 export default MainPage;
