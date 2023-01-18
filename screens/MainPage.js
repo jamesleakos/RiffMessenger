@@ -90,7 +90,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMessages}) => {
+const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMessages, navigation}) => {
   const [channels, setChannels] = useState([])
   const loadChannels = (id) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
@@ -111,6 +111,10 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
         console.log('Error getting channels ', error.message);
       });
   }
+  const loadChannel = (id) => {
+    setChannel(id)
+    navigation.getParent('LeftDrawer').closeDrawer()
+  }
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
@@ -122,7 +126,7 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
-          return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
+          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
         })}
@@ -168,7 +172,7 @@ const RightDrawerContent = ({userList}) => {
   );
 }
 
-const LeftDrawerScreen = ({setDrawerStatus}) => {
+const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [messages, setMessages] = useState([]);
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
@@ -237,7 +241,7 @@ const RightDrawerScreen = ({server, channel, userList, messages, setMessages, se
 const MainPage = ({ navigation, setDrawerStatus, friends }) => {
   // console.log('friends in main page', friends);
   return (
-    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} />
+    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
 };
 
