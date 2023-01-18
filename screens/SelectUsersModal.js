@@ -97,7 +97,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
+function SelectUsersModal({
+  modalVisible, setModalVisible, selectedUser, currentScreen,
+}) {
   return !modalVisible ? null : (
     <Modal
       animationType="slide"
@@ -114,7 +116,6 @@ function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
           setModalVisible(!modalVisible);
         }}
       >
-        {/* <Text style={styles.modalTitle}>                                                                    </Text> */}
         <ScrollView
           directionalLockEnabled
           // centerContent={true}
@@ -135,12 +136,24 @@ function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
                 >
                   <Text style={styles.textStyle}>Send Message</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonInteractive]}
-                  onPress={() => console.log('clicked')}
-                >
-                  <Text style={styles.textStyle}>Add Friend</Text>
-                </TouchableOpacity>
+                {currentScreen === 'friendsList'
+                  ? (
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonInteractive]}
+                      onPress={() => console.log('clicked')}
+                    >
+                      <Text style={styles.textStyle}>Remove Friend</Text>
+                    </TouchableOpacity>
+                  )
+                  : (
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonInteractive]}
+                      onPress={() => console.log('clicked')}
+                    >
+                      <Text style={styles.textStyle}>Add Friend</Text>
+                    </TouchableOpacity>
+                  )}
+
               </View>
             </View>
           </TouchableWithoutFeedback>

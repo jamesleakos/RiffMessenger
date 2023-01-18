@@ -96,6 +96,7 @@ function FriendsPage({ friends }) {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           selectedUser={selectedUser}
+          currentScreen="friendsList"
         />
         <SectionList
           sections={friends}

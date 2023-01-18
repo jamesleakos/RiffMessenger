@@ -157,6 +157,7 @@ const RightDrawerContent = ({userList}) => {
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
             selectedUser={selectedUser}
+            currentScreen="userList"
           />
           <View style={styles.topBar}>
             <Text style={styles.topBarText}>
