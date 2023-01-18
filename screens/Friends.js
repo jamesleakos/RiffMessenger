@@ -14,6 +14,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
 
 const { width, height } = Dimensions.get('window');
 
@@ -145,7 +146,7 @@ function FriendsPage({ friends }) {
   // todo add online/offline count to backend
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <Modal
           animationType="slide"
           transparent
