@@ -11,43 +11,40 @@ import {
   SectionList,
   SafeAreaView,
 } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    // flexDirection: 'column',
     backgroundColor: '#36393e',
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  userText: {
+  item: {
+    padding: 10,
+    justifyContent: 'center',
+    fontSize: 14,
+    height: 50,
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
     color: '#fff',
-    margin: 5,
   },
-  sectionTitle: {
+  header: {
     color: '#fff',
     fontSize: 18,
-    paddingBottom: 10,
-    paddingTop: 10,
+    margin: 10,
     width,
     backgroundColor: '#36393e',
-    // position: 'sticky',
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
   },
   pageTitle: {
     color: '#fff',
     fontSize: 18,
     marginBottom: 10,
     marginTop: 10,
-    // position: 'sticky',
-  },
-  section: {
-    margin: 10,
-    width,
   },
   bottomText: {
     color: '#fff',
@@ -58,20 +55,9 @@ const styles = StyleSheet.create({
   topBar: {
     backgroundColor: '#17181e',
     width,
-    // position: 'sticky',
     height: 90,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  bottomBar: {
-    backgroundColor: '#17181e',
-    width,
-    position: 'absolute',
-    bottom: 0,
-    height: 90,
-    display: 'flex',
-    alignItems: 'flex-start',
     justifyContent: 'flex-end',
   },
 });
@@ -90,19 +76,17 @@ function FriendsPage({ friends }) {
   // todo add online/offline count to backend
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <View style={styles.topBar}>
-          <Text style={styles.pageTitle}>Friends</Text>
-        </View>
+      <SafeAreaView style={{ flex: 1 }}>
         <SectionList
-          style={styles.section}
           sections={friends}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <Text style={styles.userText}>{item}</Text>
+            <TouchableOpacity style={styles.item}>
+              <Text style={{ color: '#fff' }}>{item}</Text>
+            </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title, data } }) => (
-            <Text style={styles.sectionTitle}>
+            <Text style={styles.header}>
               { title }
               {' - '}
               { data.length }

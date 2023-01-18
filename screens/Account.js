@@ -15,21 +15,20 @@ import {
   Image,
   SectionList,
   Button,
+  SafeAreaView,
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 
 const auth = getAuth();
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    // flexDirection: 'column',
     backgroundColor: '#36393e',
     flex: 1,
-    // alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   item: {
     padding: 10,
@@ -43,7 +42,6 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 20,
-    marginTop: 80,
     marginBottom: 20,
     marginHorizontal: 10,
     color: '#fff',
@@ -77,18 +75,20 @@ function Account() {
 
   return (
     <View style={styles.container}>
-      <SectionList
-        sections={pageData}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={item.action}>
-            <Text style={styles.title}>{item.text}</Text>
-          </TouchableOpacity>
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.header}>{title}</Text>
-        )}
-      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <SectionList
+          sections={pageData}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.item} onPress={item.action}>
+              <Text style={styles.title}>{item.text}</Text>
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.header}>{title}</Text>
+          )}
+        />
+      </SafeAreaView>
     </View>
   );
 }
