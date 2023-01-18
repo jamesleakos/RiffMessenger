@@ -11,11 +11,11 @@ import axios from 'axios';
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
 
-var width = Dimensions.get('window').width;
+var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel, messages, setMessages}) => {
   const { user } = useAuthentication();
-  console.log(user.uid);
+  // console.log(user.uid);
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
@@ -97,6 +97,7 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
       .then(response => {
         setChannels(response.data);
         setServer(id);
+        setChannel(response.data[0].id)
         setMessages([])
         axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
           .then(response => {
@@ -112,14 +113,14 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
   }
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1, height}}>
         {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.item} onPress={() => loadChannels(server.id)}>
+          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, height}}>
         {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
@@ -291,6 +292,16 @@ const styles = StyleSheet.create({
     color: '#71757c',
     paddingHorizontal: 20,
     fontSize: 12,
+  },
+  server: {
+    width: width*.18,
+    height: width*.18,
+    borderRadius: width*.09,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    margin: width*.01,
+    backgroundColor: '#5865f2',
   }
 });
 
