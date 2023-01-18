@@ -28,6 +28,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
+    console.log(user.uid)
     setMessages([...messages, message]);
   });
 
@@ -60,7 +61,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior="padding">
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
-          style={{marginLeft: 16}}
+          style={{marginHorizontal: 16}}
           inverted
           data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
@@ -262,10 +263,11 @@ const styles = StyleSheet.create({
   },
   chatBar: {
     backgroundColor: '#292b2f',
-    height: 60,
+    height: 40,
     width: width,
     borderRadius: 30,
     paddingHorizontal: 20,
+    color: '#71757c',
   },
   messageLine: {
     color: '#d5d6d6',
@@ -304,7 +306,7 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: width*.01,
     backgroundColor: '#5865f2',
-  }
+  },
 });
 
 export default MainPage;
