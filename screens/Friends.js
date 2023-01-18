@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,12 @@ import {
   ScrollView,
   SectionList,
   SafeAreaView,
+  Modal,
+  Pressable,
+  Alert,
 } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -60,9 +63,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  title: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    backgroundColor: '#36393e',
+    borderRadiusTop: 20,
+    height: height / 2,
+    padding: 35,
+    width,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#fff',
+  },
 });
 
 function FriendsPage({ friends }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   // const [friends, setFriends] = useState(
   //   [{
   //     title: 'Online',
@@ -77,12 +129,41 @@ function FriendsPage({ friends }) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
+        <Modal
+          animationType="slide"
+          transparent
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                Hello
+                {selectedUser}
+                !
+              </Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
         <SectionList
           sections={friends}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.item}>
-              <Text style={{ color: '#fff' }}>{item}</Text>
+            <TouchableOpacity style={styles.item}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                setSelectedUser(item);
+              }}
+            >
+              <Text style={styles.title}>{item}</Text>
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title, data } }) => (
