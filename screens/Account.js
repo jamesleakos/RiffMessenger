@@ -18,6 +18,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
+import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
 
 const auth = getAuth();
 
@@ -75,7 +76,7 @@ function Account() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <SectionList
           sections={pageData}
           keyExtractor={(item, index) => item + index}
