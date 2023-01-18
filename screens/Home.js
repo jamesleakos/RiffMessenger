@@ -9,11 +9,12 @@ const auth = getAuth();
 
 export default function HomeScreen() {
   const { user } = useAuthentication();
+  console.log(user.uid);
 
   // we can get private info like this
   // axios.get('/private', {
   //   headers: {
-  //     Authorization: user.token,
+  //     firebase_id: user.uid,
   //   },
   // })
 
@@ -30,9 +31,8 @@ export default function HomeScreen() {
   // app.get('/private', async (req, res) => {
   //   // Verify the user's JWT token
   //   try {
-  //     const decodedToken = await admin.auth().verifyIdToken(req.headers.authorization);
   //     // Use the uid from the decoded token to retrieve the user's private data from other db
-  //     const privateData = await otherDb.find({ userId: decodedToken.uid });
+  //     const privateData = await otherDb.find({ userId: req.headers.firebase_id });
   //     res.send(privateData);
   //   } catch (error) {
   //     res.status(401).send('Unauthorized');
