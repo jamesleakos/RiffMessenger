@@ -8,14 +8,16 @@ import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 
+import { UserContext } from '../navigation/userStack'
+
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
 
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel, messages, setMessages}) => {
-  const { user } = useAuthentication();
-  // console.log(user.uid);
+  const user = React.useContext(UserContext)
+
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
