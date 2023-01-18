@@ -9,7 +9,7 @@ const auth = getAuth();
 
 export default function HomeScreen() {
   const { user } = useAuthentication();
-  console.log(user.uid);
+  // console.log(user.uid);
 
   // we can get private info like this
   // axios.get('/private', {
