@@ -20,16 +20,20 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    backgroundColor: '#36393e',
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'flex-end',
+  modalOverlay: {
+    position: 'absolute',
+    display: 'flex',
     alignItems: 'center',
-    marginTop: 22,
+    justifyContent: 'flex-start',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
     display: 'flex',
@@ -86,9 +90,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
   },
+  scrollModal: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+    height: height / 2,
+  },
 });
 
-function SelectUsersModal({modalVisible, setModalVisible, selectedUser}) {
+function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
   return !modalVisible ? null : (
     <Modal
       animationType="slide"
@@ -98,33 +107,50 @@ function SelectUsersModal({modalVisible, setModalVisible, selectedUser}) {
         setModalVisible(!modalVisible);
       }}
     >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <TouchableOpacity
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text style={styles.textStyle}>Close</Text>
-          </TouchableOpacity>
-          <Text style={styles.modalTitle}>
-            {selectedUser}
-          </Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonInteractive]}
-              onPress={() => console.log('clicked')}
-            >
-              <Text style={styles.textStyle}>Send Message</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonInteractive]}
-              onPress={() => console.log('clicked')}
-            >
-              <Text style={styles.textStyle}>Add Friend</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPressOut={() => {
+          console.log('clicked');
+          setModalVisible(!modalVisible);
+        }}
+      >
+        {/* <Text style={styles.modalTitle}>                                                                    </Text> */}
+        <ScrollView
+          directionalLockEnabled
+          // centerContent={true}
+          contentInset = {{top: height / 2, left: 0, bottom: 0, right: 0}}
+          onScrollEndDrag={() => setModalVisible(!modalVisible)}
+        >
+        <TouchableWithoutFeedback>
+            <View style={styles.modalView}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>
+                {selectedUser}
+              </Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Send Message</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Add Friend</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+        </TouchableWithoutFeedback>
+        </ScrollView>
+      </TouchableOpacity>
     </Modal>
   );
 }
