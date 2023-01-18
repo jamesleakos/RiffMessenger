@@ -13,9 +13,10 @@ const RightDrawer = createDrawerNavigator();
 
 var {width, height} = Dimensions.get('window');
 
-const ChatScreen = ({server, channel, messages, setMessages}) => {
+const ChatScreen = ({server, channel}) => {
   const { user } = useAuthentication();
   // console.log(user.uid);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
@@ -57,7 +58,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
 }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior="padding">
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
           style={{marginLeft: 16}}
@@ -90,7 +91,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMessages, navigation}) => {
+const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigation}) => {
   const [channels, setChannels] = useState([])
   const loadChannels = (id) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
@@ -98,7 +99,6 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
         setChannels(response.data);
         setServer(id);
         setChannel(response.data[0].id)
-        setMessages([])
         axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
           .then(response => {
             setUserList(response.data);
@@ -173,7 +173,6 @@ const RightDrawerContent = ({userList}) => {
 }
 
 const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
-  const [messages, setMessages] = useState([]);
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
   const [channel, setChannel] = useState(0)
@@ -192,7 +191,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} setMessages={setMessages} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -205,13 +204,13 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         }
       }}>
       <LeftDrawer.Screen name="Channel">
-        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} messages={messages} setMessages={setMessages} setDrawerStatus={setDrawerStatus} />}
+        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} setDrawerStatus={setDrawerStatus} />}
       </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = ({server, channel, userList, messages, setMessages, setDrawerStatus}) => {
+const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   const drawerStatus = useDrawerStatus();
   useEffect(() => {
     setDrawerStatus(drawerStatus === 'open')
@@ -232,7 +231,7 @@ const RightDrawerScreen = ({server, channel, userList, messages, setMessages, se
         }
       }}>
       <RightDrawer.Screen name="HomeDrawer">
-        {(props) => <ChatScreen {...props} server={server} channel={channel} messages={messages} setMessages={setMessages} />}
+        {(props) => <ChatScreen {...props} server={server} channel={channel} />}
       </RightDrawer.Screen>
     </RightDrawer.Navigator>
   );
