@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -50,12 +50,44 @@ export default function UserStack() {
         });
     }, []);
   }
+  const [drawerStatus, setDrawerStatus] = useState(true)
   return (
     <NavigationContainer>
+      {/* <StatusBar hidden /> */}
       {/* <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator> */}
-      <Tab.Navigator screenOptions={({ route }) => ({
+      {drawerStatus
+        ? <Tab.Navigator screenOptions={({ route }) => ({
+              tabBarIcon: ({ focused, color, size }) => {
+                let iconName;
+
+                if (route.name === 'Main') {
+                  iconName = focused
+                    ? 'home'
+                    : 'home-outline';
+                } else if (route.name === 'Friends') {
+                  iconName = focused ? 'people' : 'people-outline';
+                } else if (route.name === 'Profile') {
+                  iconName = focused ? 'information-circle' : 'information-circle-outline';
+                }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#fff',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: { backgroundColor: '#36393e' }
+        })}>
+          <Tab.Screen name="Main">
+            {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+          </Tab.Screen>
+          <Tab.Screen name="Friends">
+            {(props) => <FriendScreen { ...props } friends={friends} />}
+          </Tab.Screen>
+          <Tab.Screen name="Profile" component={AccountScreen} />
+        </Tab.Navigator>
+        : <Tab.Navigator screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
@@ -75,16 +107,16 @@ export default function UserStack() {
           tabBarInactiveTintColor: '#fff',
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarStyle: { backgroundColor: '#36393e' }
+          tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
         })}>
-        <Tab.Screen name="Main">
-          {(props) => <MainPage { ...props } friends={friends} />}
-        </Tab.Screen>
-        <Tab.Screen name="Friends">
-          {(props) => <FriendScreen { ...props } friends={friends} />}
-        </Tab.Screen>
-        <Tab.Screen name="Profile" component={AccountScreen} />
-      </Tab.Navigator>
+          <Tab.Screen name="Main">
+            {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+          </Tab.Screen>
+          <Tab.Screen name="Friends">
+            {(props) => <FriendScreen { ...props } friends={friends} />}
+          </Tab.Screen>
+          <Tab.Screen name="Profile" component={AccountScreen} />
+        </Tab.Navigator>}
     </NavigationContainer>
   );
 }

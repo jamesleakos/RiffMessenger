@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Image } from 'react-native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image } from 'react-native';
+import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
@@ -13,35 +13,19 @@ const RightDrawer = createDrawerNavigator();
 
 var width = Dimensions.get('window').width;
 
-const DATA = [
-  {
-    title: 'Online',
-    data: ['User One', 'User Two', 'User Three'],
-  },
-  {
-    title: 'Offline',
-    data: ['User Four', 'User Five', 'User Six'],
-  },
-];
-
-const ChatScreen = () => {
-
+const ChatScreen = ({server, channel, messages, setMessages}) => {
   const { user } = useAuthentication();
   console.log(user.uid);
-
-  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
-  const [server, setServer] = useState(3);
-  const [channel, setChannel] = useState(7);
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/3/7`)
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
       .then(response => {
         setMessages(response.data);
       })
       .catch(error => {
         console.log('Error in chat screen ', error.message);
       });
-  }, []);
+  }, [channel]);
 
   socket.on('new_message', (message) => {
     setMessages([...messages, message]);
@@ -106,31 +90,102 @@ const ChatScreen = () => {
   );
 };
 
-
-const RightDrawerContent = () => {
+const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMessages}) => {
+  const [channels, setChannels] = useState([])
+  const loadChannels = (id) => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
+      .then(response => {
+        setChannels(response.data);
+        setServer(id);
+        setMessages([])
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
+          .then(response => {
+            setUserList(response.data);
+          })
+          .catch(error => {
+            console.log('Error getting users in server ', error.message);
+          });
+      })
+      .catch(error => {
+        console.log('Error getting channels ', error.message);
+      });
+  }
   return (
-    <View style={styles.container}>
-      <SectionList
-      sections={DATA}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({item}) => (
-        <View style={styles.item}>
-          <Text style={styles.title}>{item}</Text>
-        </View>
-      )}
-      renderSectionHeader={({section: {title}}) => (
-        <Text style={styles.header}>{title}</Text>
-      )}
-    />
+    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
+        {servers.map((server) => {
+          return (<Pressable key={server.id} style={styles.item} onPress={() => loadChannels(server.id)}>
+            <Text style={styles.title}>{server.server_name}</Text>
+          </Pressable>)
+        })}
+      </SafeAreaView>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
+        {channels.map((channel) => {
+          return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
+            <Text style={styles.title}>{channel.channel_name}</Text>
+          </Pressable>)
+        })}
+      </SafeAreaView>
     </View>
   );
 }
 
-const LeftDrawerScreen = () => {
+const RightDrawerContent = ({userList}) => {
+  const onlineUsers = [];
+  const offlineUsers = [];
+  userList.forEach((user) => {
+    if (user.online) onlineUsers.push(user.username)
+    else if (!user.online) offlineUsers.push(user.username)
+  })
+  const DATA = [
+    {
+      title: 'Online',
+      data: onlineUsers,
+    },
+    {
+      title: 'Offline',
+      data: offlineUsers,
+    },
+  ];
+  return (
+    <View style={styles.container}>
+      <SectionList
+        sections={DATA}
+        keyExtractor={(item, index) => item + index}
+        renderItem={({item}) => (
+          <View style={styles.item}>
+            <Text style={styles.title}>{item}</Text>
+          </View>
+        )}
+        renderSectionHeader={({section: {title, data}}) => (
+          <Text style={styles.header}>{title} - {data.length}</Text>
+        )}
+      />
+    </View>
+  );
+}
+
+const LeftDrawerScreen = ({setDrawerStatus}) => {
+  const [messages, setMessages] = useState([]);
+  const [servers, setServers] = useState([])
+  const [server, setServer] = useState(0)
+  const [channel, setChannel] = useState(0)
+  const [userList, setUserList] = useState([])
+  useEffect(() => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/1`)
+      .then(response => {
+        setServers(response.data);
+      })
+      .catch(error => {
+        console.log('Error getting servers ', error.message);
+      });
+  }, [])
+
   return (
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
+      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} setMessages={setMessages} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -142,16 +197,22 @@ const LeftDrawerScreen = () => {
           backgroundColor: '#36393e',
         }
       }}>
-      <LeftDrawer.Screen name="Channel" component={ChatScreen} />
+      <LeftDrawer.Screen name="Channel">
+        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} messages={messages} setMessages={setMessages} setDrawerStatus={setDrawerStatus} />}
+      </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = () => {
+const RightDrawerScreen = ({server, channel, userList, messages, setMessages, setDrawerStatus}) => {
+  const drawerStatus = useDrawerStatus();
+  useEffect(() => {
+    setDrawerStatus(drawerStatus === 'open')
+  }, [drawerStatus])
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
-      drawerContent={(props) => <RightDrawerContent {...props} />}
+      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} />}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
@@ -163,15 +224,17 @@ const RightDrawerScreen = () => {
           backgroundColor: '#36393e',
         }
       }}>
-      <RightDrawer.Screen name="HomeDrawer" component={LeftDrawerScreen} />
+      <RightDrawer.Screen name="HomeDrawer">
+        {(props) => <ChatScreen {...props} server={server} channel={channel} messages={messages} setMessages={setMessages} />}
+      </RightDrawer.Screen>
     </RightDrawer.Navigator>
   );
 }
 
-const MainPage = ({ navigation, friends }) => {
+const MainPage = ({ navigation, setDrawerStatus, friends }) => {
   // console.log('friends in main page', friends);
   return (
-    <RightDrawerScreen />
+    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} />
   );
 };
 
