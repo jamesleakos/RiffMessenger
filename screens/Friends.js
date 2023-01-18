@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,44 +10,44 @@ import {
   ScrollView,
   SectionList,
   SafeAreaView,
+  Modal,
+  Pressable,
+  Alert,
 } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    // flexDirection: 'column',
     backgroundColor: '#36393e',
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  userText: {
+  item: {
+    padding: 10,
+    justifyContent: 'center',
+    fontSize: 14,
+    height: 50,
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
     color: '#fff',
-    margin: 5,
   },
-  sectionTitle: {
+  header: {
     color: '#fff',
     fontSize: 18,
-    paddingBottom: 10,
-    paddingTop: 10,
+    margin: 10,
     width,
     backgroundColor: '#36393e',
-    // position: 'sticky',
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
   },
   pageTitle: {
     color: '#fff',
     fontSize: 18,
     marginBottom: 10,
     marginTop: 10,
-    // position: 'sticky',
-  },
-  section: {
-    margin: 10,
-    width,
   },
   bottomText: {
     color: '#fff',
@@ -58,25 +58,80 @@ const styles = StyleSheet.create({
   topBar: {
     backgroundColor: '#17181e',
     width,
-    // position: 'sticky',
     height: 90,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-  bottomBar: {
-    backgroundColor: '#17181e',
-    width,
-    position: 'absolute',
-    bottom: 0,
-    height: 90,
-    display: 'flex',
-    alignItems: 'flex-start',
+  title: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  centeredView: {
+    flex: 1,
     justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    display: 'flex',
+    backgroundColor: '#36393e',
+    borderRadiusTop: 20,
+    height: height / 2,
+    padding: 35,
+    width,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 5,
+    padding: 10,
+    elevation: 2,
+    justifyContent: 'flex-start',
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  buttonInteractive: {
+    height: 80,
+    margin: 10,
+    backgroundColor: '#17181e',
+    flex: 1,
+  },
+  buttonClose: {
+    margin: 10,
+    backgroundColor: '#17181e',
+    width: width / 2,
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#fff',
+  },
+  modalTitle: {
+    fontSize: 24,
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#fff',
   },
 });
 
 function FriendsPage({ friends }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   // const [friends, setFriends] = useState(
   //   [{
   //     title: 'Online',
@@ -90,19 +145,59 @@ function FriendsPage({ friends }) {
   // todo add online/offline count to backend
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <View style={styles.topBar}>
-          <Text style={styles.pageTitle}>Friends</Text>
-        </View>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Modal
+          animationType="slide"
+          transparent
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+              <Text style={styles.modalTitle}>
+                {selectedUser}
+              </Text>
+              <View style={styles.buttonContainer}>
+                <Pressable
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Send Message</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Add Friend</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <SectionList
-          style={styles.section}
           sections={friends}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <Text style={styles.userText}>{item}</Text>
+            <TouchableOpacity
+              style={styles.item}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                setSelectedUser(item);
+              }}
+            >
+              <Text style={styles.title}>{item}</Text>
+            </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title, data } }) => (
-            <Text style={styles.sectionTitle}>
+            <Text style={styles.header}>
               { title }
               {' - '}
               { data.length }
