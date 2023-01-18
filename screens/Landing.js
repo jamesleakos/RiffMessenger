@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   name: {
-      fontSize: 48,
-      color: '#fff',
+    fontSize: 48,
+    color: '#fff',
   },
   button: {
     backgroundColor: '#7289da',

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import moment from 'moment';
 import axios from 'axios';
 
 const LeftDrawer = createDrawerNavigator();
@@ -54,14 +55,38 @@ const ChatScreen = () => {
     setText('');
   };
 
+  const formatTimeAgo = (timestamp) => {
+    const time = moment(parseInt(timestamp));
+    const now = moment();
+    if (time.isSame(now, 'day')) {
+      return "Today " + time.format("h:mm A");
+    } else if (time.isSame(now.subtract(1, 'days'), 'day')) {
+      return "Yesterday " + time.format("h:mm A");
+    } else {
+      return time.format("MM/DD/YYYY h:mm A");
+    }
+}
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
           style={{marginLeft: 16}}
-          data={messages}
+          inverted
+          data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => <Text style={{color: '#fff'}}>{item.message}</Text>}
+          renderItem={({ item }) => (
+            <View style={styles.messageContainer}>
+              <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
+              <View style={styles.textContainer}>
+                <View style={styles.topLine}>
+                  <Text style={styles.username}>{item.user_id}</Text>
+                  <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
+                </View>
+                <Text style={styles.messageLine}>{item.message}</Text>
+              </View>
+            </View>
+          )}
           />
         <TextInput
           style={ styles.chatBar }
@@ -170,6 +195,34 @@ const styles = StyleSheet.create({
     width: width,
     borderRadius: 30,
     paddingHorizontal: 20,
+  },
+  messageLine: {
+    color: '#d5d6d6',
+  },
+  profilePicture: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    padding: 10,
+  },
+  messageContainer: {
+    padding: 5,
+    flexDirection: 'row',
+  },
+  textContainer: {
+    flexDirection: 'column',
+    paddingHorizontal: 10,
+  },
+  username: {
+    color: '#fff',
+  },
+  topLine: {
+    flexDirection: 'row',
+  },
+  timestamp: {
+    color: '#71757c',
+    paddingHorizontal: 20,
+    fontSize: 12,
   }
 });
 
