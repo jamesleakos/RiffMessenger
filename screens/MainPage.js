@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -12,11 +12,12 @@ import SelectUsersModal from './SelectUsersModal';
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
 
-var width = Dimensions.get('window').width;
+var {width, height} = Dimensions.get('window');
 
-const ChatScreen = ({server, channel, messages, setMessages}) => {
+const ChatScreen = ({server, channel}) => {
   const { user } = useAuthentication();
-  console.log(user.uid);
+  // console.log(user.uid);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
@@ -29,6 +30,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
+    console.log(user.uid)
     setMessages([...messages, message]);
   });
 
@@ -58,10 +60,10 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
 }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }}>
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
-          style={{marginLeft: 16}}
+          style={{marginHorizontal: 16}}
           inverted
           data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
@@ -70,7 +72,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
               <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
               <View style={styles.textContainer}>
                 <View style={styles.topLine}>
-                  <Text style={styles.username}>{item.user_id}</Text>
+                  <Text style={styles.username}>{item.username}</Text>
                   <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
                 </View>
                 <Text style={styles.messageLine}>{item.message}</Text>
@@ -87,18 +89,18 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
           />
         <Button title="Send" onPress={sendMessage} />
         </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMessages}) => {
+const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigation}) => {
   const [channels, setChannels] = useState([])
   const loadChannels = (id) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
       .then(response => {
         setChannels(response.data);
         setServer(id);
-        setMessages([])
+        setChannel(response.data[0].id)
         axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
           .then(response => {
             setUserList(response.data);
@@ -111,18 +113,22 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
         console.log('Error getting channels ', error.message);
       });
   }
+  const loadChannel = (id) => {
+    setChannel(id)
+    navigation.getParent('LeftDrawer').closeDrawer()
+  }
   return (
-    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
+    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.item} onPress={() => loadChannels(server.id)}>
+          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
-          return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
+          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
         })}
@@ -152,7 +158,7 @@ const RightDrawerContent = ({userList}) => {
   ];
   return (
     <View style={{display: 'flex', flex: 1, alignItems: 'flex-start', marginHorizontal: 16}}>
-      <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         <SelectUsersModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
@@ -160,35 +166,34 @@ const RightDrawerContent = ({userList}) => {
             currentScreen="userList"
           />
           <View style={styles.topBar}>
-            <Text style={styles.topBarText}>
+              <Text style={styles.topBarText}>
               Channel Name
             </Text>
           </View>
         <SectionList
-          sections={DATA}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({item}) => (
-            <TouchableOpacity
+            sections={DATA}
+            keyExtractor={(item, index) => item + index}
+            renderItem={({item}) => (
+              <TouchableOpacity
                 style={styles.userItem}
                 onPress={() => {
                   setModalVisible(!modalVisible);
                   setSelectedUser(item);
                 }}
               >
-                <Text style={styles.title}>{item}</Text>
-              </TouchableOpacity>
-          )}
-          renderSectionHeader={({section: {title, data}}) => (
-            <Text style={styles.header}>{title} - {data.length}</Text>
-          )}
-        />
+                  <Text style={styles.title}>{item}</Text>
+                </TouchableOpacity>
+            )}
+            renderSectionHeader={({section: {title, data}}) => (
+              <Text style={styles.header}>{title} - {data.length}</Text>
+            )}
+          />
       </SafeAreaView>
     </View>
   );
 }
 
-const LeftDrawerScreen = ({setDrawerStatus}) => {
-  const [messages, setMessages] = useState([]);
+const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
   const [channel, setChannel] = useState(0)
@@ -207,7 +212,7 @@ const LeftDrawerScreen = ({setDrawerStatus}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} setMessages={setMessages} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -220,13 +225,13 @@ const LeftDrawerScreen = ({setDrawerStatus}) => {
         }
       }}>
       <LeftDrawer.Screen name="Channel">
-        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} messages={messages} setMessages={setMessages} setDrawerStatus={setDrawerStatus} />}
+        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} setDrawerStatus={setDrawerStatus} />}
       </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = ({server, channel, userList, messages, setMessages, setDrawerStatus}) => {
+const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   const drawerStatus = useDrawerStatus();
   useEffect(() => {
     setDrawerStatus(drawerStatus === 'open')
@@ -247,7 +252,7 @@ const RightDrawerScreen = ({server, channel, userList, messages, setMessages, se
         }
       }}>
       <RightDrawer.Screen name="HomeDrawer">
-        {(props) => <ChatScreen {...props} server={server} channel={channel} messages={messages} setMessages={setMessages} />}
+        {(props) => <ChatScreen {...props} server={server} channel={channel} />}
       </RightDrawer.Screen>
     </RightDrawer.Navigator>
   );
@@ -256,7 +261,7 @@ const RightDrawerScreen = ({server, channel, userList, messages, setMessages, se
 const MainPage = ({ navigation, setDrawerStatus, friends }) => {
   // console.log('friends in main page', friends);
   return (
-    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} />
+    <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
 };
 
@@ -281,10 +286,11 @@ const styles = StyleSheet.create({
   },
   chatBar: {
     backgroundColor: '#292b2f',
-    height: 60,
+    height: 40,
     width: width,
     borderRadius: 30,
     paddingHorizontal: 20,
+    color: '#71757c',
   },
   messageLine: {
     color: '#d5d6d6',
@@ -313,28 +319,7 @@ const styles = StyleSheet.create({
     color: '#71757c',
     paddingHorizontal: 20,
     fontSize: 12,
-  },
-  userItem: {
-    justifyContent: 'center',
-    fontSize: 14,
-    height: 50,
-    borderBottomWidth: 1,
-    borderColor: '#17181e',
-    color: '#fff',
-  },
-  topBar: {
-    backgroundColor: '#36393e',
-    width,
-    height: 60,
-    marginBottom: 20,
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
-  },
-  topBarText: {
-    fontSize: 20,
-    color: '#fff',
-  },
+  }
 });
 
 export default MainPage;
