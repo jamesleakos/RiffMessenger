@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 24,
     marginBottom: 10,
     marginTop: 10,
   },
@@ -58,9 +58,9 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   topBar: {
-    backgroundColor: '#17181e',
+    backgroundColor: '#36393e',
     width,
-    height: 90,
+    height: 60,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -89,6 +89,9 @@ function FriendsPage({ friends }) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.topBar}>
+          <Text style={styles.pageTitle}>Friends</Text>
+        </View>
         <SelectUsersModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -7,6 +7,7 @@ import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
 import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
+import SelectUsersModal from './SelectUsersModal';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -131,6 +132,8 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
 }
 
 const RightDrawerContent = ({userList}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   const onlineUsers = [];
   const offlineUsers = [];
   userList.forEach((user) => {
@@ -148,19 +151,37 @@ const RightDrawerContent = ({userList}) => {
     },
   ];
   return (
-    <View style={styles.container}>
-      <SectionList
-        sections={DATA}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item}</Text>
+    <View style={{display: 'flex', flex: 1, alignItems: 'flex-start', marginHorizontal: 16}}>
+      <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+        <SelectUsersModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            selectedUser={selectedUser}
+          />
+          <View style={styles.topBar}>
+            <Text style={styles.topBarText}>
+              Channel Name
+            </Text>
           </View>
-        )}
-        renderSectionHeader={({section: {title, data}}) => (
-          <Text style={styles.header}>{title} - {data.length}</Text>
-        )}
-      />
+        <SectionList
+          sections={DATA}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({item}) => (
+            <TouchableOpacity
+                style={styles.userItem}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  setSelectedUser(item);
+                }}
+              >
+                <Text style={styles.title}>{item}</Text>
+              </TouchableOpacity>
+          )}
+          renderSectionHeader={({section: {title, data}}) => (
+            <Text style={styles.header}>{title} - {data.length}</Text>
+          )}
+        />
+      </SafeAreaView>
     </View>
   );
 }
@@ -291,7 +312,28 @@ const styles = StyleSheet.create({
     color: '#71757c',
     paddingHorizontal: 20,
     fontSize: 12,
-  }
+  },
+  userItem: {
+    justifyContent: 'center',
+    fontSize: 14,
+    height: 50,
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
+    color: '#fff',
+  },
+  topBar: {
+    backgroundColor: '#36393e',
+    width,
+    height: 60,
+    marginBottom: 20,
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+  },
+  topBarText: {
+    fontSize: 20,
+    color: '#fff',
+  },
 });
 
 export default MainPage;

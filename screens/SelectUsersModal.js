@@ -57,14 +57,14 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     marginBottom: 15,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
   },
   buttonInteractive: {
-    height: 80,
+    height: 100,
     margin: 10,
     backgroundColor: '#17181e',
     flex: 1,
@@ -111,7 +111,6 @@ function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
         style={styles.modalOverlay}
         activeOpacity={1}
         onPressOut={() => {
-          console.log('clicked');
           setModalVisible(!modalVisible);
         }}
       >
@@ -119,17 +118,13 @@ function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
         <ScrollView
           directionalLockEnabled
           // centerContent={true}
-          contentInset = {{top: height / 2, left: 0, bottom: 0, right: 0}}
+          contentInset={{
+            top: height / 2, left: 0, bottom: 0, right: 0,
+          }}
           onScrollEndDrag={() => setModalVisible(!modalVisible)}
         >
-        <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback>
             <View style={styles.modalView}>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Close</Text>
-              </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {selectedUser}
               </Text>
@@ -148,7 +143,7 @@ function SelectUsersModal({ modalVisible, setModalVisible, selectedUser }) {
                 </TouchableOpacity>
               </View>
             </View>
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
         </ScrollView>
       </TouchableOpacity>
     </Modal>

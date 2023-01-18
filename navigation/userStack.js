@@ -84,7 +84,7 @@ export default function UserStack() {
           tabBarStyle: { backgroundColor: '#36393e' }
         })}>
           <Tab.Screen name="Main">
-            {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+            {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
           <Tab.Screen name="Friends">
             {(props) => <FriendScreen { ...props } friends={friends} />}
