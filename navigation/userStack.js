@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -53,6 +53,7 @@ export default function UserStack() {
   const [drawerStatus, setDrawerStatus] = useState(true)
   return (
     <NavigationContainer>
+      {/* <StatusBar hidden /> */}
       {/* <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator> */}
