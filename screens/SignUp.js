@@ -1,4 +1,8 @@
+// dependencies
 import React from 'react';
+import Constants from 'expo-constants';
+
+// imports
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -6,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 
 // authorization import
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import axios from 'axios';
 const auth = getAuth();
 
 var width = Dimensions.get('window').width;
@@ -14,6 +19,7 @@ export default function SignUp({ navigation }) {
 
   const [value, setValue] = React.useState({
     email: '',
+    username: '',
     password: '',
     error: ''
   })
@@ -28,8 +34,15 @@ export default function SignUp({ navigation }) {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, value.email, value.password);
+      const {user} = await createUserWithEmailAndPassword(auth, value.email, value.password);
+      console.log('posting to users');
+      const res = await axios.post(`${Constants.manifest?.extra?.apiUrl}/users`, {
+        username: value.username,
+        firebase_id: user.uid
+      });
+
       navigation.navigate('Sign In');
+
     } catch (error) {
       setValue({
         ...value,
@@ -50,6 +63,17 @@ export default function SignUp({ navigation }) {
           containerStyle={styles.control}
           value={value.email}
           onChangeText={(text) => setValue({ ...value, email: text })}
+          // leftIcon={<Icon
+          //   name='envelope'
+          //   size={16}
+          // />}
+        />
+
+        <Input
+          placeholder='Username'
+          containerStyle={styles.control}
+          value={value.username}
+          onChangeText={(text) => setValue({ ...value, username: text })}
           // leftIcon={<Icon
           //   name='envelope'
           //   size={16}

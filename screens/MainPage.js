@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 
 const LeftDrawer = createDrawerNavigator();
@@ -23,6 +24,10 @@ const DATA = [
 ];
 
 const ChatScreen = () => {
+
+  const { user } = useAuthentication();
+  console.log(user.uid);
+
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [server, setServer] = useState(3);
