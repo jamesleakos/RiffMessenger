@@ -85,14 +85,14 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
     <View style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         {servers.map((server) => {
-          return (<Pressable style={styles.item} onPress={() => loadChannels(server.id)}>
+          return (<Pressable key={server.id} style={styles.item} onPress={() => loadChannels(server.id)}>
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
-          return (<Pressable style={styles.item} onPress={() => setChannel(channel.id)}>
+          return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
         })}
