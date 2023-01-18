@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
+    display: 'flex',
     backgroundColor: '#36393e',
     borderRadiusTop: 20,
     height: height / 2,
@@ -90,15 +91,25 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 5,
     padding: 10,
     elevation: 2,
+    justifyContent: 'flex-start',
   },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  buttonInteractive: {
+    height: 80,
+    margin: 10,
+    backgroundColor: '#17181e',
+    flex: 1,
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    margin: 10,
+    backgroundColor: '#17181e',
+    width: width / 2,
   },
   textStyle: {
     color: 'white',
@@ -106,6 +117,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#fff',
+  },
+  modalTitle: {
+    fontSize: 24,
     marginBottom: 15,
     textAlign: 'center',
     color: '#fff',
@@ -139,17 +156,29 @@ function FriendsPage({ friends }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                Hello
-                {selectedUser}
-                !
-              </Text>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
                 <Text style={styles.textStyle}>Hide Modal</Text>
               </Pressable>
+              <Text style={styles.modalTitle}>
+                {selectedUser}
+              </Text>
+              <View style={styles.buttonContainer}>
+                <Pressable
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Send Message</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Add Friend</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         </Modal>
@@ -157,7 +186,8 @@ function FriendsPage({ friends }) {
           sections={friends}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.item}
+            <TouchableOpacity
+              style={styles.item}
               onPress={() => {
                 setModalVisible(!modalVisible);
                 setSelectedUser(item);
