@@ -320,6 +320,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 12,
   },
+  server: {
+    width: width*.18,
+    height: width*.18,
+    borderRadius: width*.09,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    margin: width*.01,
+    backgroundColor: '#5865f2',
+  },
   userItem: {
     padding: 10,
     justifyContent: 'center',
