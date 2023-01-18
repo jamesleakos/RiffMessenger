@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#36393e',
     borderRadiusTop: 20,
     height: height / 2,
-    padding: 35,
+    padding: 10,
     width,
     alignItems: 'center',
     shadowColor: '#000',
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     elevation: 2,
+    marginBottom: 15,
     justifyContent: 'flex-start',
   },
   buttonContainer: {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 28,
     marginBottom: 15,
     textAlign: 'center',
     color: '#fff',
@@ -156,28 +157,28 @@ function FriendsPage({ friends }) {
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Pressable
+              <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}
               >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
+                <Text style={styles.textStyle}>Close</Text>
+              </TouchableOpacity>
               <Text style={styles.modalTitle}>
                 {selectedUser}
               </Text>
               <View style={styles.buttonContainer}>
-                <Pressable
+                <TouchableOpacity
                   style={[styles.button, styles.buttonInteractive]}
                   onPress={() => console.log('clicked')}
                 >
                   <Text style={styles.textStyle}>Send Message</Text>
-                </Pressable>
-                <Pressable
+                </TouchableOpacity>
+                <TouchableOpacity
                   style={[styles.button, styles.buttonInteractive]}
                   onPress={() => console.log('clicked')}
                 >
                   <Text style={styles.textStyle}>Add Friend</Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
