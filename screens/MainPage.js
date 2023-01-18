@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -57,7 +57,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
 }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }}>
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior="padding">
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
           style={{marginLeft: 16}}
@@ -69,7 +69,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
               <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
               <View style={styles.textContainer}>
                 <View style={styles.topLine}>
-                  <Text style={styles.username}>{item.user_id}</Text>
+                  <Text style={styles.username}>{item.username}</Text>
                   <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
                 </View>
                 <Text style={styles.messageLine}>{item.message}</Text>
@@ -86,7 +86,7 @@ const ChatScreen = ({server, channel, messages, setMessages}) => {
           />
         <Button title="Send" onPress={sendMessage} />
         </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -150,18 +150,20 @@ const RightDrawerContent = ({userList}) => {
   ];
   return (
     <View style={styles.container}>
-      <SectionList
-        sections={DATA}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item}</Text>
-          </View>
-        )}
-        renderSectionHeader={({section: {title, data}}) => (
-          <Text style={styles.header}>{title} - {data.length}</Text>
-        )}
-      />
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
+        <SectionList
+          sections={DATA}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({item}) => (
+            <View style={styles.item}>
+              <Text style={styles.title}>{item}</Text>
+            </View>
+          )}
+          renderSectionHeader={({section: {title, data}}) => (
+            <Text style={styles.header}>{title} - {data.length}</Text>
+          )}
+        />
+      </SafeAreaView>
     </View>
   );
 }
