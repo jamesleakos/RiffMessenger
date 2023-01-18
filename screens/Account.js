@@ -15,32 +15,33 @@ import {
   Image,
   SectionList,
   Button,
+  SafeAreaView,
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 
 const auth = getAuth();
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    // flexDirection: 'column',
     backgroundColor: '#36393e',
     flex: 1,
-    // alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   item: {
     padding: 10,
+    justifyContent: 'center',
     backgroundColor: '#17181e',
+    fontSize: 14,
+    height: 50,
     borderBottomWidth: 1,
     borderColor: '#36393e',
     color: '#fff',
   },
   header: {
     fontSize: 20,
-    marginTop: 80,
     marginBottom: 20,
     marginHorizontal: 10,
     color: '#fff',
@@ -51,36 +52,43 @@ const styles = StyleSheet.create({
   },
 });
 
-// const MenuButton = (content, route) => (
-//   <TouchableOpacity>
-//     <Text>{content}</Text>
-//   </TouchableOpacity>
-// );
+const MenuButton = (content, route) => (
+  <TouchableOpacity onPress={() => signOut(auth)}>
+    <Text style={styles.item}>{content}</Text>
+  </TouchableOpacity>
+);
 
 function Account() {
   let userName = 'tempName';
   const [pageData, setPageData] = useState([
     {
       title: userName,
-      data: ['Change Username', 'Change Email', 'Change Password', 'Delete Account', 'View Friend Requests'],
+      data: [
+        { text: 'Change Username', action: () => console.log('clicked') },
+        { text: 'Change Email', action: () => console.log('clicked') },
+        { text: 'Change Password', action: () => console.log('clicked') },
+        { text: 'Delete Account', action: () => console.log('clicked') },
+        { text: 'View Friends Request', action: () => console.log('clicked') },
+        { text: 'Sign Out', action: () => signOut(auth) }],
     },
   ]);
 
   return (
     <View style={styles.container}>
-      <SectionList
-        sections={pageData}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item}</Text>
-          </View>
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.header}>{title}</Text>
-        )}
-      />
-      <Button title="Sign Out" buttonStyle={styles.item} onPress={() => signOut(auth)}/>
+      <SafeAreaView style={{ flex: 1 }}>
+        <SectionList
+          sections={pageData}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.item} onPress={item.action}>
+              <Text style={styles.title}>{item.text}</Text>
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.header}>{title}</Text>
+          )}
+        />
+      </SafeAreaView>
     </View>
   );
 }
