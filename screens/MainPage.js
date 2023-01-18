@@ -112,15 +112,15 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, setMess
       });
   }
   return (
-    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1, height}}>
+    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         {servers.map((server) => {
           return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, height}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => setChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
