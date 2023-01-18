@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Image } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Image, KeyboardAvoidingView } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -73,7 +73,7 @@ const ChatScreen = () => {
 }
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }}>
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior="padding">
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
         <FlatList
           style={{marginLeft: 16}}
@@ -102,7 +102,7 @@ const ChatScreen = () => {
           />
         <Button title="Send" onPress={sendMessage} />
         </SafeAreaView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
