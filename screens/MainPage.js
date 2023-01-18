@@ -319,6 +319,30 @@ const styles = StyleSheet.create({
     color: '#71757c',
     paddingHorizontal: 20,
     fontSize: 12,
+  },
+  userItem: {
+    padding: 10,
+    justifyContent: 'center',
+    fontSize: 14,
+    height: 50,
+    width,
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
+    color: '#fff',
+  },
+  topBar: {
+    backgroundColor: '#36393e',
+    width,
+    height: 60,
+    display: 'flex',
+    alignItems: 'flex-start',
+    marginLeft: width / 4,
+    marginBottom: 20,
+    justifyContent: 'flex-end',
+  },
+  topBarText: {
+    fontSize: 20,
+    color: '#fff',
   }
 });
 
