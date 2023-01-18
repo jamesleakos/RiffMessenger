@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,10 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
+import axios from 'axios';
+import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
-import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import SafeViewAndroid from '../utils/hooks/SafeViewAndroid';
 
 const { width, height } = Dimensions.get('window');
 
@@ -73,9 +75,37 @@ const styles = StyleSheet.create({
 
 });
 
-function FriendsPage({ friends }) {
+function FriendsPage() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
+  const [friends, setFriends] = useState([{
+    title: 'Online',
+  },
+  {
+    title: 'Offline',
+  },
+  ]);
+  useEffect(() => {
+    axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
+      .then((response) => {
+        const offline = [];
+        const online = [];
+        // console.log('response: ', response.data);
+        for (let i = 0; i < response.data.length; i += 1) {
+          if (response.data[i].online) {
+            online.push(response.data[i].username);
+          }
+          offline.push(response.data[i].username);
+        }
+        friends[1].data = offline;
+        friends[0].data = online;
+        setFriends([...friends]);
+        // console.log(friends);
+      })
+      .catch((err) => {
+        console.log('ERROR :', err.message);
+      });
+  }, []);
   // const [friends, setFriends] = useState(
   //   [{
   //     title: 'Online',
@@ -87,9 +117,9 @@ function FriendsPage({ friends }) {
   //   }],
   // );
   // todo add online/offline count to backend
-  return (
+  return !friends[0].data ? null : (
     <View style={styles.container}>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
+      <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
         </View>

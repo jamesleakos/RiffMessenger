@@ -258,8 +258,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   );
 }
 
-const MainPage = ({ navigation, setDrawerStatus, friends }) => {
-  // console.log('friends in main page', friends);
+const MainPage = ({ navigation, setDrawerStatus }) => {
   return (
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
@@ -279,6 +278,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     color: '#fff',
+    padding: 5,
+    backgroundColor: '#36393e',
   },
   title: {
     fontSize: 16,
@@ -347,7 +348,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     marginLeft: width / 4,
-    marginBottom: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-end',
   },
   topBarText: {

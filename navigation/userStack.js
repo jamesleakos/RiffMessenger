@@ -25,35 +25,6 @@ function TempScreen() {
 }
 
 export default function UserStack() {
-  const [friends, setFriends] = useState([{
-    title: 'Online',
-  },
-  {
-    title: 'Offline',
-  },
-  ]);
-  if (Constants.expoConfig.extra.apiUrl) {
-    useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
-        .then((response) => {
-          const offline = [];
-          const online = [];
-          for (let i = 0; i < response.data.length; i += 1) {
-            if(response.data[i].online) {
-              online.push(response.data[i].username)
-            }
-            offline.push(response.data[i].username);
-          }
-          friends[1].data = offline;
-          friends[0].data = online;
-          setFriends([...friends]);
-          // console.log(friends);
-        })
-        .catch((err) => {
-          console.log('ERROR :', err.message);
-        });
-    }, []);
-  }
   const [drawerStatus, setDrawerStatus] = useState(true)
   return (
     <NavigationContainer>
@@ -86,8 +57,7 @@ export default function UserStack() {
           <Tab.Screen name="Main">
             {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
-          <Tab.Screen name="Friends">
-            {(props) => <FriendScreen { ...props } friends={friends} />}
+          <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
           <Tab.Screen name="Profile" component={AccountScreen} />
         </Tab.Navigator>
@@ -114,10 +84,9 @@ export default function UserStack() {
           tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
         })}>
           <Tab.Screen name="Main">
-            {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+            {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
-          <Tab.Screen name="Friends">
-            {(props) => <FriendScreen { ...props } friends={friends} />}
+          <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
           <Tab.Screen name="Profile" component={AccountScreen} />
         </Tab.Navigator>}
