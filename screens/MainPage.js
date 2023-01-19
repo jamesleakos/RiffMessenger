@@ -680,7 +680,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
-    marginBottom: 10
+    marginBottom: 10,
+    marginTop: 10
   },
   chatBar2: {
     backgroundColor: '#292b2f',
@@ -689,7 +690,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
-    marginBottom: 10
+    marginBottom: 10,
+    marginTop: 10
   },
   serverHeader: {
     fontSize: 20,
