@@ -94,7 +94,6 @@ function FriendsPage({ route }) {
     React.useCallback(() => {
       axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
-          console.log('useEffect', route);
           const offline = [];
           const online = [];
           for (let i = 0; i < response.data.length; i += 1) {

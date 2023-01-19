@@ -31,14 +31,16 @@ export const UserId = React.createContext()
 export default function UserStack({ user }) {
 
   const [userId, setUserId] = useState();
+  const [userName, setUserName] = useState();
 
   useEffect(() => {
     if (user) {
       setTimeout(() => {
         axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
           .then((response) => {
-            console.log(response.data.id)
-            setUserId(response.data.id)
+            // console.log(response.data.id)
+            setUserId(response.data.id);
+            setUserName(response.data.username);
           })
           .catch((err) => {
             console.log(err);
@@ -88,7 +90,9 @@ export default function UserStack({ user }) {
           </Tab.Screen>
           <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
-          <Tab.Screen name="Profile" component={AccountScreen} />
+          <Tab.Screen name="Profile">
+              {(props) => <AccountScreen { ...props } userName={userName} />}
+          </Tab.Screen>
         </Tab.Navigator>
         : <Tab.Navigator screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -117,7 +121,9 @@ export default function UserStack({ user }) {
             </Tab.Screen>
             <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
-            <Tab.Screen name="Profile" component={AccountScreen} />
+          <Tab.Screen name="Profile">
+              {(props) => <AccountScreen { ...props } userName={userName} />}
+          </Tab.Screen>
           </Tab.Navigator>}
         </UserId.Provider>
     </NavigationContainer>
