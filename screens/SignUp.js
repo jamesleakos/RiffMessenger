@@ -87,6 +87,7 @@ export default function SignUp({ navigation }) {
           value={value.password}
           onChangeText={(text) => setValue({ ...value, password: text })}
           secureTextEntry={true}
+          style={{color: 'white'}}
           // leftIcon={<Icon
           //   name='key'
           //   size={16}
