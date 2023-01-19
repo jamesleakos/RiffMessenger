@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -9,6 +9,7 @@ import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
 import CreateServerModal from './CreateServerModal';
+import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
 import { UserId } from '../navigation/userStack'
@@ -19,12 +20,12 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
+
   const userId = React.useContext(UserId);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [holdModalVisible, setHoldModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  const { user } = useAuthentication();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
@@ -41,11 +42,12 @@ const ChatScreen = ({server, channel}) => {
       });
   }, [channel]);
 
-  socket.on('new_message', (message) => {
-    console.log("Weeeeeee")
-    setMessages([...messages, message]);
-
-  });
+  useEffect(() => {
+    socket.on('new_message', (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+    return () => socket.off('new message')
+  }, [ socket ]);
 
   const sendMessage = () => {
     if (text === '') return;
@@ -162,17 +164,21 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserList, navigation}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserList, navigation, server}) => {
   const [channels, setChannels] = useState([])
   const [modalVisible, setModalVisible] = useState(false);
+  const [serverName, setServerName] = useState('');
+  const [inviteModal, setInviteModal] = useState(false);
+
   const userId = React.useContext(UserId);
 
-  const loadChannels = (id) => {
+  const loadChannels = (id, serverName) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
       .then(response => {
         setChannels(response.data);
         setServer(id);
         setChannel(response.data[0].id)
+        setServerName(serverName)
         axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
           .then(response => {
             setUserList(response.data);
@@ -189,12 +195,20 @@ const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserL
     setChannel(id)
     navigation.getParent('LeftDrawer').closeDrawer()
   }
+
+  const makeServerIcon = (serverName) => {
+    let splitServerName = serverName.split(' ')
+    if (splitServerName.length > 1) {
+      return `${splitServerName[0].slice(0,1)}${splitServerName[1].slice(0,1)}`
+    }
+    return serverName.slice(0,1)
+  }
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
-            <Text style={styles.title}>{server.server_name}</Text>
+          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id, server.server_name)}>
+            <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
           </Pressable>)
         })}
         <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
@@ -207,11 +221,23 @@ const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserL
           getServers={getServers}
         />
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginLeft: 12, marginRight: 12}}>
+        <Text style={styles.serverHeader}>{serverName}</Text>
+        {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+          <Text>
+            Invite User
+          </Text>
+        </TouchableOpacity> : null}
+        <InviteUserModal
+          inviteModal={inviteModal}
+          setInviteModal={setInviteModal}
+          server={server}
+          setUserList={setUserList}
+        />
         {channels.map((channel) => {
-          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
-            <Text style={styles.title}>{channel.channel_name}</Text>
-          </Pressable>)
+          return (<TouchableHighlight key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
+            <Text style={styles.title}>{`# ${channel.channel_name}`}</Text>
+          </TouchableHighlight>)
         })}
       </SafeAreaView>
     </View>
@@ -306,7 +332,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} server={server} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -508,6 +534,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: '#71757c',
   },
+  serverHeader: {
+    fontSize: 20,
+    color: '#fff',
+    marginTop: 2,
+    marginBottom: 10
+  },
+  inviteButton: {
+    backgroundColor: '#5865f2',
+    justifyContent:'center',
+    alignItems: 'center',
+    height: 24,
+    marginBottom: 10
+  }
 });
 
 export default MainPage;
