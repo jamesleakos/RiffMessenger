@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, Modal } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
+import { useFocusEffect } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
@@ -19,8 +20,7 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
-  const userId = 27
-  // React.useContext(UserId);
+  const userId = React.useContext(UserId);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
@@ -135,9 +135,9 @@ const ChatScreen = ({server, channel}) => {
 };
 
 const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
-  const userId = 27
-  // React.useContext(UserId);
+  const userId = React.useContext(UserId);
 
+  const [channelModal, setChannelModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
   const loadChannels = (server) => {
@@ -167,7 +167,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   }
 
   const longPressChannel = (channel) => {
-    setModalVisible(!modalVisible)
+    setChannelModal(!channelModal)
     setChannelName(channel.channel_name)
   }
 
@@ -188,8 +188,8 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <ChannelModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
+        channelModal={channelModal}
+        setChannelModal={setChannelModal}
         channelName={channelName}
       />
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
@@ -301,8 +301,7 @@ const RightDrawerContent = ({userList, channelName}) => {
 }
 
 const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
-  const userId = 27
-  // React.useContext(UserId);
+  const userId = React.useContext(UserId);
 
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
@@ -310,7 +309,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [channelName, setChannelName] = useState('')
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    getServers();
+    getServers()
   }, [])
 
   const getServers = () => {

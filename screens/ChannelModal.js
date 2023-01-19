@@ -95,21 +95,21 @@ const styles = StyleSheet.create({
 });
 
 function ChannelModal({
-  modalVisible, setModalVisible, channelName,
+  channelModal, setChannelModal, channelName,
 }) {
-  return !modalVisible ? null : (
+  return !channelModal ? null : (
     <Modal
       animationType="slide"
       transparent
-      visible={modalVisible}
+      visible={channelModal}
       onRequestClose={() => {
-        setModalVisible(!modalVisible);
+        setChannelModal(!channelModal);
       }}>
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
         onPressOut={() => {
-          setModalVisible(!modalVisible);
+          setChannelModal(!channelModal);
         }}
       >
         <TouchableWithoutFeedback>
