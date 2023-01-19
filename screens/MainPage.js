@@ -144,8 +144,14 @@ const RightDrawerContent = ({userList}) => {
   const onlineUsers = [];
   const offlineUsers = [];
   userList.forEach((user) => {
-    if (user.online) onlineUsers.push(user.username)
-    else if (!user.online) offlineUsers.push(user.username)
+    if (user.online) onlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
+    else if (!user.online) offlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
   })
   const DATA = [
     {
@@ -182,7 +188,7 @@ const RightDrawerContent = ({userList}) => {
                   setSelectedUser(item);
                 }}
               >
-                  <Text style={styles.title}>{item}</Text>
+                  <Text style={styles.title}>{item.username}</Text>
                 </TouchableOpacity>
             )}
             renderSectionHeader={({section: {title, data}}) => (
@@ -261,8 +267,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   );
 }
 
-const MainPage = ({ navigation, setDrawerStatus, friends }) => {
-  // console.log('friends in main page', friends);
+const MainPage = ({ navigation, setDrawerStatus }) => {
   return (
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
@@ -282,6 +287,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     color: '#fff',
+    padding: 5,
+    backgroundColor: '#36393e',
   },
   title: {
     fontSize: 16,
@@ -350,7 +357,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     marginLeft: width / 4,
-    marginBottom: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-end',
   },
   topBarText: {
