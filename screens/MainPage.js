@@ -11,6 +11,7 @@ import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
 import ChannelModal from './ChannelModal';
 import CreateServerModal from './CreateServerModal';
+import CreateChannelModal from './CreateChannelModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
@@ -196,6 +197,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
 
   const [serverName, setServerName] = useState('');
   const [inviteModal, setInviteModal] = useState(false);
+  const [createChannelModal, setCreateChannelModal] = useState(false);
   const [channelModal, setChannelModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
@@ -329,6 +331,17 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
               })
             )
           }
+          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setCreateChannelModal(true)}>
+            <Text>
+              Add Channel
+            </Text>
+          </TouchableOpacity> : null}
+          <CreateChannelModal
+            createChannelModal={createChannelModal}
+            setCreateChannelModal={setCreateChannelModal}
+            server={server}
+            loadChannels={loadChannels}
+          />
         </View>
 
         {/* {channels.map((channel) => {
