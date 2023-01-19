@@ -296,7 +296,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
             channels.map((friend) => {
               return (<Pressable key={friend.id} style={({pressed}) => [
                 {
-                  backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+                  backgroundColor: pressed ? '#494d54' : '#36393e',
                 },
                 styles.item,
               ]} onPress={() => loadChannel(friend)}>
@@ -308,7 +308,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
             channels.map((channel) => {
               return (<Pressable key={channel.id} style={({pressed}) => [
                 {
-                  backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+                  backgroundColor: pressed ? '#494d54' : '#36393e',
                 },
                 styles.item,
               ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
