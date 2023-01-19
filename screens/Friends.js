@@ -21,6 +21,8 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
 import SafeViewAndroid from '../utils/hooks/SafeViewAndroid';
+
+import InviteUserModal from './InviteUserModal';
 import { UserId } from '../utils/hooks/context';
 
 const { width, height } = Dimensions.get('window');
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
 
 function FriendsPage({ route }) {
   const userId = React.useContext(UserId);
+  const [addFriendModal, setAddFriendModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [friendRemoved, setFriendRemoved] = useState(false);
@@ -130,8 +133,16 @@ function FriendsPage({ route }) {
       <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
-          <TouchableOpacity><Text style={styles.addFriend}>Add</Text></TouchableOpacity>
+          <TouchableOpacity><Text style={styles.addFriend} onPress={() => setAddFriendModal(!addFriendModal)}>Add</Text></TouchableOpacity>
         </View>
+        <InviteUserModal
+          inviteModal={addFriendModal}
+          setInviteModal={setAddFriendModal}
+          server={userId}
+          setUserList={setFriendRemoved}
+          friendRemoved={friendRemoved}
+          isFriendInvite
+        />
         <SelectUsersModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
