@@ -12,7 +12,7 @@ import CreateServerModal from './CreateServerModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
