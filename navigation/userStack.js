@@ -14,7 +14,7 @@ import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
-import DirectMessageScreen from '../screens/DirectMessage.js';
+// import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
