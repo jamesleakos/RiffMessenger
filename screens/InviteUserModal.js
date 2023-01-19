@@ -127,7 +127,7 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList}) {
           .then(response => {
             setUserList(response.data);
             setInviteModal(!inviteModal);
-            setUserName('');
+            setUsername('');
           })
           .catch(error => {
             console.log('Error getting users in server ', error.message);
