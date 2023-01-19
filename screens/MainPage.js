@@ -267,7 +267,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
       />
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         <Pressable key={1} style={styles.server} onPress={() => loadDms(userId)}>
-          <Text style={styles.title}>Direct Messages</Text>
+          <Text style={styles.title}>{makeServerIcon(serverName)}</Text>
         </Pressable>
         {servers.map((server) => {
           return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server)}>
