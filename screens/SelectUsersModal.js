@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
 });
 
 const addFriend = (user_id, friend_id) => {
-  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/addFriend`, { user_id, friend_id })
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends`, { user_id, friend_id })
     .then(() => {
       console.log('succesfully added friend');
     })
@@ -111,7 +111,7 @@ const addFriend = (user_id, friend_id) => {
 };
 
 const removeFriend = (user_id, friend_id) => {
-  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/removeFriend`, { user_id, friend_id })
+  axios.delete(`${Constants.expoConfig.extra.apiUrl}/friends`, { user_id, friend_id })
     .then(() => {
       console.log('succesfully added friend');
     })
