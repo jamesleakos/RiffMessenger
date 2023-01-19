@@ -41,7 +41,7 @@ export default function UserStack({ user }) {
   ]);
   if (Constants.expoConfig.extra.apiUrl) {
     useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
         .then((response) => {
           const offline = [];
           const online = [];
