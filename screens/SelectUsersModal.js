@@ -16,7 +16,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
 
 const { width, height } = Dimensions.get('window');
 
