@@ -94,8 +94,9 @@ const styles = StyleSheet.create({
 });
 
 function ChannelModal({
-  channelModal, setChannelModal, channelName,
+  channelModal, setChannelModal, channelName, channel,
 }) {
+  console.log(channel)
   return !channelModal ? null : (
     <Modal
       animationType="slide"
