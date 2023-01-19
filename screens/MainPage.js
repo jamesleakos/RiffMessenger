@@ -71,7 +71,7 @@ const ChatScreen = ({server, channel}) => {
     } else {
       return time.format("MM/DD/YYYY h:mm A");
     }
-  }
+    }
 
   const closeEdit = () => {
     setSelectedMessage({id: -1});
