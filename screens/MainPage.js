@@ -143,8 +143,14 @@ const RightDrawerContent = ({userList}) => {
   const onlineUsers = [];
   const offlineUsers = [];
   userList.forEach((user) => {
-    if (user.online) onlineUsers.push(user.username)
-    else if (!user.online) offlineUsers.push(user.username)
+    if (user.online) onlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
+    else if (!user.online) offlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
   })
   const DATA = [
     {
@@ -181,7 +187,7 @@ const RightDrawerContent = ({userList}) => {
                   setSelectedUser(item);
                 }}
               >
-                  <Text style={styles.title}>{item}</Text>
+                  <Text style={styles.title}>{item.username}</Text>
                 </TouchableOpacity>
             )}
             renderSectionHeader={({section: {title, data}}) => (

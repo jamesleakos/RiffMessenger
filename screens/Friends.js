@@ -93,9 +93,15 @@ function FriendsPage() {
         // console.log('response: ', response.data);
         for (let i = 0; i < response.data.length; i += 1) {
           if (response.data[i].online) {
-            online.push(response.data[i].username);
+            online.push({
+              id: response.data[i].id,
+              username: response.data[i].username,
+            });
           }
-          offline.push(response.data[i].username);
+          offline.push({
+            id: response.data[i].id,
+            username: response.data[i].username,
+          });
         }
         friends[1].data = offline;
         friends[0].data = online;
@@ -106,17 +112,7 @@ function FriendsPage() {
         console.log('ERROR :', err.message);
       });
   }, []);
-  // const [friends, setFriends] = useState(
-  //   [{
-  //     title: 'Online',
-  //     data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
-  //   },
-  //   {
-  //     title: 'Offline',
-  //     data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
-  //   }],
-  // );
-  // todo add online/offline count to backend
+  // console.log('friends: ', friends);
   return !friends[0].data ? null : (
     <View style={styles.container}>
       <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
@@ -140,7 +136,7 @@ function FriendsPage() {
                 setSelectedUser(item);
               }}
             >
-              <Text style={styles.title}>{item}</Text>
+              <Text style={styles.title}>{item.username}</Text>
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title, data } }) => (
