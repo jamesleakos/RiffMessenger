@@ -534,6 +534,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     color: '#71757c',
   },
+  serverHeader: {
+    fontSize: 20,
+    color: '#fff',
+    marginTop: 2,
+    marginBottom: 10
+  },
+  inviteButton: {
+    backgroundColor: '#5865f2',
+    justifyContent:'center',
+    alignItems: 'center',
+    height: 24,
+    marginBottom: 10
+  }
 });
 
 export default MainPage;
