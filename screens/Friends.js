@@ -138,7 +138,8 @@ function FriendsPage({ route }) {
           inviteModal={addFriendModal}
           setInviteModal={setAddFriendModal}
           server={userId}
-          setUserList={null}
+          setUserList={setFriendRemoved}
+          friendRemoved={friendRemoved}
           isFriendInvite
         />
         <SelectUsersModal

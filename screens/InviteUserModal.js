@@ -114,20 +114,22 @@ const styles = StyleSheet.create({
 
 });
 
-function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFriendInvite}) {
+function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFriendInvite, friendRemoved}) {
 
   const [username, setUsername] = useState('');
 
   const handleAddFriendByUsername = () => {
-    // axios.post(`${Constants.expoConfig.extra.apiUrl}/friends`, { user_id, friend_id })
-    //   .then(() => {
-    //     console.log('succesfully added friend');
-    //   })
-    //   .catch((err) => {
-    //     console.log('Error adding friend', err);
-    //   });
-    // server = userId
-    console.log('add friend', username, 'with userId ', server);
+    console.log('userId:', server);
+    axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/username`, { server, username })// server = userId
+      .then(() => {
+        setUserList(!friendRemoved);
+        console.log('succesfully added friend');
+      })
+      .catch((err) => {
+        console.log('Error adding friend', err);
+      });
+
+    // console.log('add friend', username, 'with userId ', server);
   };
 
   const handleInviteUser = () => {
@@ -197,7 +199,13 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
 
                 { isFriendInvite
                   ? (
-                    <Pressable style={styles.button} onPress={() => handleAddFriendByUsername()}>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        handleAddFriendByUsername();
+                        setInviteModal(!inviteModal);
+                      }}
+                    >
                       <Text style={styles.buttonText}>Add Friend</Text>
                     </Pressable>
                   ) : (
