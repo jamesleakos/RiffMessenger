@@ -13,6 +13,7 @@ import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
 import { UserId } from '../navigation/userStack'
+import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -205,15 +206,18 @@ const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserL
   }
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+      {/* server side bar */}
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
-        {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id, server.server_name)}>
-            <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
-          </Pressable>)
-        })}
-        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
-          <Text style={styles.title}>+</Text>
-        </Pressable>
+        <View style={styles.serverArea}>
+          {servers.map((server) => {
+            return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server.id, server.server_name)}>
+              <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
+            </Pressable>)
+          })}
+          <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+            <Text style={styles.title}>+</Text>
+          </Pressable>
+        </View>
         <CreateServerModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
@@ -221,24 +225,27 @@ const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserL
           getServers={getServers}
         />
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginLeft: 12, marginRight: 12}}>
-        <Text style={styles.serverHeader}>{serverName}</Text>
-        {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
-          <Text>
-            Invite User
-          </Text>
-        </TouchableOpacity> : null}
-        <InviteUserModal
-          inviteModal={inviteModal}
-          setInviteModal={setInviteModal}
-          server={server}
-          setUserList={setUserList}
-        />
-        {channels.map((channel) => {
-          return (<TouchableHighlight key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
-            <Text style={styles.title}>{`# ${channel.channel_name}`}</Text>
-          </TouchableHighlight>)
-        })}
+      {/* server content - channels, etc. */}
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginLeft: -5, marginRight: 12}}>
+        <View style={styles.channelArea}>
+          <Text style={styles.serverHeader}>{serverName}</Text>
+          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+            <Text>
+              Invite User
+            </Text>
+          </TouchableOpacity> : null}
+          <InviteUserModal
+            inviteModal={inviteModal}
+            setInviteModal={setInviteModal}
+            server={server}
+            setUserList={setUserList}
+          />
+          {channels.map((channel) => {
+            return (<TouchableHighlight key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
+              <Text style={styles.title}>{`# ${channel.channel_name}`}</Text>
+            </TouchableHighlight>)
+          })}
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -384,6 +391,15 @@ const MainPage = ({ navigation, setDrawerStatus }) => {
   );
 };
 
+const padding = function (a, b, c, d) {
+  return {
+    paddingTop: a,
+    paddingRight: b ? b : a,
+    paddingBottom: c ? c : a,
+    paddingLeft: d ? d : (b ? b : a)
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#36393e',
@@ -433,15 +449,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 12,
   },
+  // server stuff
+  serverArea: {
+    width: width*.20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   server: {
-    width: width*.18,
-    height: width*.18,
+    width: width*.12,
+    height: width*.12,
     borderRadius: width*.09,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     margin: width*.01,
     backgroundColor: '#5865f2',
+  },
+  // channel area in left drawer
+  channelArea: {
+    backgroundColor: 'black',
+    height: height,
+    borderRadius: '10px',
+    ...padding(10)
   },
   userItem: {
     padding: 10,
