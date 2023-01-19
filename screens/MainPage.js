@@ -198,6 +198,11 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const [channelModal, setChannelModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
+
+  useEffect(() => {
+    loadDms(userId);
+  }, [])
+
   const loadChannels = (server) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
       .then(response => {
@@ -238,6 +243,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         setChannel(response.data[0].id)
         setChannelName(response.data[0].username)
         setUserList([])
+        setServerName('Direct Messages')
       })
       .catch(error => {
         console.log('Error getting friends ', error.message);
@@ -327,7 +333,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   );
 }
 
-const RightDrawerContent = ({userList, channelName}) => {
+const RightDrawerContent = ({userList, channelName, server}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const onlineUsers = [];
@@ -360,30 +366,34 @@ const RightDrawerContent = ({userList, channelName}) => {
             setModalVisible={setModalVisible}
             selectedUser={selectedUser}
             currentScreen="userList"
-          />
-          <View style={styles.topBar}>
-            <Text style={styles.topBarText}>
-              {channelName}
-            </Text>
-          </View>
-        <SectionList
-            sections={DATA}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                style={styles.userItem}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                  setSelectedUser(item);
-                }}
-              >
-                  <Text style={styles.title}>{item.username}</Text>
-                </TouchableOpacity>
-            )}
-            renderSectionHeader={({section: {title, data}}) => (
-              <Text style={styles.header}>{title} - {data.length}</Text>
-            )}
-          />
+        />
+        <View style={styles.topBar}>
+          <Text style={styles.topBarText}>
+            {channelName}
+          </Text>
+        </View>
+        {server !== 0
+          ? (
+            <SectionList
+              sections={DATA}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  style={styles.userItem}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    setSelectedUser(item);
+                  }}
+                >
+                    <Text style={styles.title}>{item.username}</Text>
+                  </TouchableOpacity>
+              )}
+              renderSectionHeader={({section: {title, data}}) => (
+                <Text style={styles.header}>{title} - {data.length}</Text>
+              )}
+            />
+          ) : null
+        }
       </SafeAreaView>
     </View>
   );
@@ -443,7 +453,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus, channelN
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
-      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} channelName={channelName} />}
+      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} channelName={channelName} server={server} />}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
