@@ -68,14 +68,20 @@ const styles = StyleSheet.create({
     width,
     height: 60,
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 16,
     color: '#fff',
   },
-
+  addFriend: {
+    position: 'absolute',
+    color: '#fff',
+    top: 0,
+    left: 100,
+  },
 });
 
 function FriendsPage({ route }) {
@@ -124,6 +130,7 @@ function FriendsPage({ route }) {
       <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
+          <TouchableOpacity><Text style={styles.addFriend}>Add</Text></TouchableOpacity>
         </View>
         <SelectUsersModal
           modalVisible={modalVisible}

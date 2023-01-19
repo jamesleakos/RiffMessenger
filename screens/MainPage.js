@@ -17,6 +17,8 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   const { user } = useAuthentication();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
@@ -63,13 +65,23 @@ const ChatScreen = ({server, channel}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+       <SelectUsersModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            selectedUser={selectedUser}
+            currentScreen="userList"
+          />
         <FlatList
           style={{marginHorizontal: 16}}
           inverted
           data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <View style={styles.messageContainer}>
+            <TouchableOpacity style={styles.messageContainer}onPress={() => {
+              setModalVisible(!modalVisible);
+              setSelectedUser(item);
+            }}
+            >
               <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
               <View style={styles.textContainer}>
                 <View style={styles.topLine}>
@@ -78,7 +90,7 @@ const ChatScreen = ({server, channel}) => {
                 </View>
                 <Text style={styles.messageLine}>{item.message}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
           />
         <TextInput
