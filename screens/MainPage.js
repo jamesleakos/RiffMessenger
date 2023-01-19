@@ -18,17 +18,32 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
+  const userId = 27
+  // React.useContext(UserId);
+
   const { user } = useAuthentication();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
+    if (server === 0) {
+      axios.get(`${Constants.manifest?.extra?.apiUrl}/directmessages/${userId}/${channel}`)
+      .then(response => {
+        const messageList = response.data || []
+        setMessages(messageList);
+      })
+      .catch(error => {
+        console.log('Error in chat screen2 ', error.message);
+      });
+    } else {
+      axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
       .then(response => {
         setMessages(response.data);
       })
       .catch(error => {
         console.log('Error in chat screen ', error.message);
       });
+    }
+
   }, [channel]);
 
   socket.on('new_message', (message) => {
@@ -37,13 +52,25 @@ const ChatScreen = ({server, channel}) => {
 
   const sendMessage = () => {
     if (text === '') return;
-    const messageObj = {
-      message: text,
-      server_id: server,
-      channel_id: channel,
-      user_id: 1,
-      recipient_id: 0,
+    let messageObj;
+    if (server === 0) {
+      messageObj = {
+        message: text,
+        server_id: null,
+        channel_id: null,
+        user_id: userId,
+        recipient_id: channel,
+      }
+    } else {
+      messageObj = {
+        message: text,
+        server_id: server,
+        channel_id: channel,
+        user_id: userId,
+        recipient_id: 0,
+      }
     }
+
     socket.emit('message', messageObj);
     setText('');
   };
@@ -94,7 +121,10 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChannelName, setUserList, navigation}) => {
+const LeftDrawerContent = ({servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
+  const userId = 27
+  // React.useContext(UserId);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
   const loadChannels = (server) => {
@@ -128,6 +158,20 @@ const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChan
     setChannelName(channel.channel_name)
   }
 
+  const loadDms = (id) => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/friends/${id}`)
+      .then(response => {
+        setChannels(response.data);
+        setServer(0);
+        setChannel(response.data[0].id)
+        setChannelName(response.data[0].username)
+        setUserList([])
+      })
+      .catch(error => {
+        console.log('Error getting channels ', error.message);
+      });
+  }
+
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <ChannelModal
@@ -136,6 +180,9 @@ const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChan
         channelName={channelName}
       />
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
+        <Pressable key={1} style={styles.server} onPress={() => loadDms(userId)}>
+          <Text style={styles.title}>Direct Messages</Text>
+        </Pressable>
         {servers.map((server) => {
           return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server)}>
             <Text style={styles.title}>{server.server_name}</Text>
@@ -143,11 +190,27 @@ const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChan
         })}
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
-        {channels.map((channel) => {
+        {server === 0
+          ? (
+            channels.map((friend) => {
+              return (<Pressable key={friend.id} style={styles.item} onPress={() => loadChannel(friend)}>
+                <Text style={styles.title}>{friend.username}</Text>
+              </Pressable>)
+            })
+          )
+          : (
+            channels.map((channel) => {
+              return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
+                <Text style={styles.title}>{channel.channel_name}</Text>
+              </Pressable>)
+            })
+          )
+        }
+        {/* {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
-        })}
+        })} */}
       </SafeAreaView>
     </View>
   );
@@ -216,7 +279,8 @@ const RightDrawerContent = ({userList, channelName}) => {
 }
 
 const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
-  const userId = React.useContext(UserId);
+  const userId = 27
+  // React.useContext(UserId);
 
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
@@ -237,7 +301,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
