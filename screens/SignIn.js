@@ -35,7 +35,6 @@ export default SignIn = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Signin screen!</Text>
 
       {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
@@ -45,6 +44,7 @@ export default SignIn = () => {
           containerStyle={styles.control}
           value={value.email}
           onChangeText={(text) => setValue({ ...value, email: text })}
+          style={{color: 'white'}}
         />
 
         <Input
@@ -53,9 +53,10 @@ export default SignIn = () => {
           value={value.password}
           onChangeText={(text) => setValue({ ...value, password: text })}
           secureTextEntry={true}
+          style={{color: 'white'}}
         />
 
-        <Button title="Sign in" buttonStyle={styles.control} onPress={signIn} />
+        <Button title="Sign in" buttonStyle={styles.buttonControl} onPress={signIn}/>
       </View>
     </View>
   );
@@ -65,18 +66,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#36393e',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   controls: {
-    flex: 1,
+    flex: 1
   },
 
   control: {
     marginTop: 10,
-    width: width * .8
+    width: width * .8,
+  },
+
+  buttonControl: {
+    marginTop: 10,
+    width: width * .8,
+    backgroundColor: '#7289da'
   },
 
   error: {

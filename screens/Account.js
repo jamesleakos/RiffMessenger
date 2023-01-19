@@ -19,6 +19,9 @@ import {
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import axios from 'axios';
+import Constants from 'expo-constants';
+import { UserId } from '../navigation/userStack'
 
 const auth = getAuth();
 
@@ -60,7 +63,17 @@ const MenuButton = (content, route) => (
 );
 
 function Account() {
+  const userId = React.useContext(UserId);
+
   let userName = 'tempName';
+
+  const handleSignOut = () => {
+    signOut(auth);
+    axios.put(`${Constants.manifest?.extra?.apiUrl}/users/${userId}`, {
+      online: false
+    })
+  }
+
   const [pageData, setPageData] = useState([
     {
       title: userName,
@@ -70,7 +83,7 @@ function Account() {
         { text: 'Change Password', action: () => console.log('clicked') },
         { text: 'Delete Account', action: () => console.log('clicked') },
         { text: 'View Friends Request', action: () => console.log('clicked') },
-        { text: 'Sign Out', action: () => signOut(auth) }],
+        { text: 'Sign Out', action: () => handleSignOut() }],
     },
   ]);
 

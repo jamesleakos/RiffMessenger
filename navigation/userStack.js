@@ -69,8 +69,10 @@ export default function UserStack({ user }) {
       setTimeout(() => {
         axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
           .then((response) => {
-            console.log(response.data.id)
             setUserId(response.data.id)
+            axios.put(`${Constants.manifest?.extra?.apiUrl}/users/${response.data.id}`, {
+              online: true
+            })
           })
           .catch((err) => {
             console.log(err);
