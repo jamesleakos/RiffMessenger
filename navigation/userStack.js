@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
 
-import { useAuthentication } from '../utils/hooks/useAuthentication';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -26,10 +26,11 @@ function TempScreen() {
   );
 }
 
-export const UserContext = React.createContext();
+export const UserId = React.createContext()
 
-export default function UserStack() {
-  const user = useAuthentication();
+export default function UserStack({ user }) {
+
+  const [userId, setUserId] = useState();
 
   const [friends, setFriends] = useState([{
     title: 'Online',
@@ -56,10 +57,31 @@ export default function UserStack() {
         });
     }, []);
   }
+
+  useEffect(() => {
+    if (user) {
+      axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
+      .then((response) => {
+        console.log(response.data)
+        setUserId(response.data.id)
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+    }
+  }, [])
+
   const [drawerStatus, setDrawerStatus] = useState(true)
+  if (!userId) {
+    return (
+      <View>
+        <Text>Loading</Text>
+      </View>
+    )
+  }
   return (
     <NavigationContainer>
-      <UserContext.Provider value={user}>
+      <UserId.Provider value={userId}>
         {/* <StatusBar hidden /> */}
         {/* <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
@@ -124,7 +146,7 @@ export default function UserStack() {
             </Tab.Screen>
             <Tab.Screen name="Profile" component={AccountScreen} />
           </Tab.Navigator>}
-        </UserContext.Provider>
+        </UserId.Provider>
     </NavigationContainer>
   );
 }
