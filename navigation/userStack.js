@@ -8,6 +8,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
 
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
@@ -24,18 +26,47 @@ function TempScreen() {
   );
 }
 
-export default function UserStack() {
+export const UserId = React.createContext()
+
+export default function UserStack({ user }) {
+
+  const [userId, setUserId] = useState();
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
+        .then((response) => {
+          setUserId(response.data.id)
+          .catch((err) => {
+            console.log('ERROR :', err.message);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      }, 300)
+    }
+  }, [])
+
   const [drawerStatus, setDrawerStatus] = useState(true)
+  if (!userId) {
+    return (
+      <View>
+      </View>
+    )
+  }
   return (
     <NavigationContainer>
-      {/* <StatusBar hidden /> */}
-      {/* <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-      </Stack.Navigator> */}
-      {drawerStatus
-        ? <Tab.Navigator screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
+      <UserId.Provider value={userId}>
+        {/* <StatusBar hidden /> */}
+        {/* <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+        </Stack.Navigator> */}
+        {drawerStatus
+          ? <Tab.Navigator screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
 
                 if (route.name === 'Main') {
                   iconName = focused
@@ -65,31 +96,32 @@ export default function UserStack() {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === 'Main') {
-              iconName = focused
-                ? 'home'
-                : 'home-outline';
-            } else if (route.name === 'Friends') {
-              iconName = focused ? 'people' : 'people-outline';
-            } else if (route.name === 'Profile') {
-              iconName = focused ? 'information-circle' : 'information-circle-outline';
-            }
+              if (route.name === 'Main') {
+                iconName = focused
+                  ? 'home'
+                  : 'home-outline';
+              } else if (route.name === 'Friends') {
+                iconName = focused ? 'people' : 'people-outline';
+              } else if (route.name === 'Profile') {
+                iconName = focused ? 'information-circle' : 'information-circle-outline';
+              }
 
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#fff',
-          tabBarInactiveTintColor: '#fff',
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
-        })}>
-          <Tab.Screen name="Main">
-            {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: '#fff',
+            tabBarInactiveTintColor: '#fff',
+            headerShown: false,
+            tabBarShowLabel: false,
+            tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
+          })}>
+            <Tab.Screen name="Main">
+              {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
+            </Tab.Screen>
+            <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
-          <Tab.Screen name="Friends" component={FriendScreen}>
-          </Tab.Screen>
-          <Tab.Screen name="Profile" component={AccountScreen} />
-        </Tab.Navigator>}
+            <Tab.Screen name="Profile" component={AccountScreen} />
+          </Tab.Navigator>}
+        </UserId.Provider>
     </NavigationContainer>
   );
 }

@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import LandingScreen from '../screens/Landing.js';
 import SignInScreen from '../screens/SignIn.js';
-import SignOutScreen from '../screens/SignUp.js';
+import SignUpScreen from '../screens/SignUp.js';
 
 const Stack = createStackNavigator();
 
@@ -16,7 +16,7 @@ export default function AuthStack() {
       <Stack.Navigator>
         <Stack.Screen name="Welcome" component={LandingScreen} />
         <Stack.Screen name="Sign In" component={SignInScreen} />
-        <Stack.Screen name="Sign Up" component={SignOutScreen} />
+        <Stack.Screen name="Sign Up" component={SignUpScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

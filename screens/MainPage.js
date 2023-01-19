@@ -9,15 +9,15 @@ import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
 
+import { UserId } from '../navigation/userStack'
+
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
 
 var {width, height} = Dimensions.get('window');
 
-const ChatScreen = ({server, channel}) => {
+const ChatScreen = ({server, channel, messages, setMessages}) => {
   const { user } = useAuthentication();
-  // console.log(user.uid);
-  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
@@ -200,12 +200,14 @@ const RightDrawerContent = ({userList}) => {
 }
 
 const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
+  const userId = React.useContext(UserId);
+
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
   const [channel, setChannel] = useState(0)
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/1`)
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
       .then(response => {
         setServers(response.data);
       })
