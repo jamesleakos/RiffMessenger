@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    marginTop: '25%',
   },
   modalOverlay: {
     position: 'absolute',
@@ -112,7 +111,14 @@ function ChannelModal({
           setChannelModal(!channelModal);
         }}
       >
-        <TouchableWithoutFeedback>
+        <ScrollView
+          directionalLockEnabled
+          // centerContent={true}
+          contentInset={{
+            top: height / 2, left: 0, bottom: 0, right: 0,
+          }}
+          onScrollEndDrag={() => setModalVisible(!modalVisible)}
+        >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>
@@ -134,7 +140,7 @@ function ChannelModal({
               </View>
             </View>
           </View>
-        </TouchableWithoutFeedback>
+        </ScrollView>
       </TouchableOpacity>
     </Modal>
   );
