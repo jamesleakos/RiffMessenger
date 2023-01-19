@@ -6,9 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, Button, Pressable } from 'react-native';
 
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -29,6 +29,8 @@ function TempScreen() {
 export const UserId = React.createContext()
 
 export default function UserStack({ user }) {
+
+  const auth = getAuth();
 
   const [userId, setUserId] = useState();
 
@@ -80,7 +82,12 @@ export default function UserStack({ user }) {
   const [drawerStatus, setDrawerStatus] = useState(true)
   if (!userId) {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#36393e' }}>
+        <Pressable onPress={() => signOut(auth) }>
+          <Text style={{fontSize: 24, color: 'black'}}>
+            Log Out
+          </Text>
+        </Pressable>
       </View>
     )
   }
