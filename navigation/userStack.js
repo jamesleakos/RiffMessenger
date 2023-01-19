@@ -9,11 +9,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StatusBar, TouchableOpacity, Button, Pressable } from 'react-native';
 
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { UserId } from '../utils/hooks/context.js'
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
+// import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,8 +27,6 @@ function TempScreen() {
     </View>
   );
 }
-
-export const UserId = React.createContext()
 
 export default function UserStack({ user }) {
 
@@ -132,7 +132,7 @@ export default function UserStack({ user }) {
               {(props) => <AccountScreen { ...props } userName={userName} />}
           </Tab.Screen>
           </Tab.Navigator>}
-        </UserId.Provider>
+      </UserId.Provider>
     </NavigationContainer>
   );
 }

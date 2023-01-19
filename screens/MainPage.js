@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
+import { useFocusEffect } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
@@ -8,9 +9,13 @@ import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
+import ChannelModal from './ChannelModal';
 import CreateServerModal from './CreateServerModal';
+import InviteUserModal from './InviteUserModal';
+import HoldMessageModal from './HoldMessageModal';
 
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
+import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -18,38 +23,71 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
+
   const userId = React.useContext(UserId);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [holdModalVisible, setHoldModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  const { user } = useAuthentication();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(['a', 'b']);
   const [text, setText] = useState('');
+  const [replyEdits, setReplyEdits] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState({})
+  const [showButton, setShowButton] = useState(false);
+
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
+    if (server === 0) {
+      axios.get(`${Constants.manifest?.extra?.apiUrl}/directmessages/${userId}/${channel}`)
+      .then(response => {
+        const messageList = Array.isArray(response.data) ? response.data : []
+        setMessages(messageList);
+      })
+      .catch(error => {
+        console.log('Error in chat screen2 ', error.message);
+      });
+    } else {
+      axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
       .then(response => {
         setMessages(response.data);
       })
       .catch(error => {
         console.log('Error in chat screen ', error.message);
       });
+    }
+
   }, [channel]);
 
-  socket.on('new_message', (message) => {
-    setMessages([...messages, message]);
-  });
+  useEffect(() => {
+    socket.on('new_message', (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+    return () => socket.off('new message')
+  }, [ socket ]);
 
   const sendMessage = () => {
     if (text === '') return;
-    const messageObj = {
-      message: text,
-      server_id: server,
-      channel_id: channel,
-      user_id: userId,
-      recipient_id: 0,
+    let messageObj;
+    if (server === 0) {
+      messageObj = {
+        message: text,
+        server_id: null,
+        channel_id: null,
+        user_id: userId,
+        recipient_id: channel,
+      }
+    } else {
+      messageObj = {
+        message: text,
+        server_id: server,
+        channel_id: channel,
+        user_id: userId,
+        recipient_id: 0,
+      }
     }
+
     socket.emit('message', messageObj);
     setText('');
+    closeEdit();
   };
 
   const formatTimeAgo = (timestamp) => {
@@ -62,7 +100,21 @@ const ChatScreen = ({server, channel}) => {
     } else {
       return time.format("MM/DD/YYYY h:mm A");
     }
-}
+    }
+
+  const closeEdit = () => {
+    setSelectedMessage({id: -1});
+    setReplyEdits(false);
+  }
+
+  const handleTextChange = (input) => {
+    setText(input);
+    if (input.length > 0) {
+      setShowButton(true);
+    } else {
+      setShowButton(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
@@ -79,11 +131,18 @@ const ChatScreen = ({server, channel}) => {
           data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.messageContainer}onPress={() => {
-              setModalVisible(!modalVisible);
-              setSelectedUser(item);
-            }}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                setSelectedUser(item);
+              }}
+              onLongPress={() => {
+                setReplyEdits(false)
+                setSelectedMessage(item)
+                setHoldModalVisible(true);
+              }}
             >
+              <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
               <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
               <View style={styles.textContainer}>
                 <View style={styles.topLine}>
@@ -92,34 +151,68 @@ const ChatScreen = ({server, channel}) => {
                 </View>
                 <Text style={styles.messageLine}>{item.message}</Text>
               </View>
-            </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
           )}
           />
-        <TextInput
-          style={ styles.chatBar }
-          value={text}
-          onChangeText={setText}
-          placeholder="Type a message..."
-          placeholderTextColor="#71757c"
-          />
-        <Button title="Send" onPress={sendMessage} />
+          {replyEdits &&
+            <View style={styles.editBarContainer}>
+              <Pressable onPress={() => closeEdit()}>
+                <Text style={styles.exit} >X</Text>
+              </Pressable>
+              <View style={styles.editBar}>
+                <Text style={styles.reply}>{`Replying to ${selectedMessage.username}`}</Text>
+              </View>
+            </View>
+          }
+          <View style={text.length === 0 ? styles.bottomBar : styles.bottomBar2}>
+            <TextInput
+              style={ text.length === 0 ? styles.chatBar : styles.chatBar2 }
+              value={text}
+              onChangeText={handleTextChange}
+              placeholder="Type a message..."
+              placeholderTextColor="#71757c"
+              />
+              {showButton && (
+                <TouchableOpacity onPress={sendMessage}>
+                  <View style={styles.sendButton}>
+                    <Text style={styles.send}>></Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+           </View>
+        <HoldMessageModal
+          holdModalVisible={holdModalVisible}
+          setHoldModalVisible={setHoldModalVisible}
+          setReplyEdits={setReplyEdits}
+        />
         </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
 
-const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserList, navigation}) => {
-  const [channels, setChannels] = useState([])
-  const [modalVisible, setModalVisible] = useState(false);
+const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
   const userId = React.useContext(UserId);
 
-  const loadChannels = (id) => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
+  const [serverName, setServerName] = useState('');
+  const [inviteModal, setInviteModal] = useState(false);
+  const [channelModal, setChannelModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [channels, setChannels] = useState([])
+
+  useEffect(() => {
+    loadDms(userId);
+  }, [])
+
+  const loadChannels = (server) => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
       .then(response => {
         setChannels(response.data);
-        setServer(id);
+        setServer(server.id);
         setChannel(response.data[0].id)
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
+        setChannelName(response.data[0].channel_name)
+        setServerName(server.server_name)
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${server.id}/users`)
           .then(response => {
             setUserList(response.data);
           })
@@ -131,40 +224,124 @@ const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserL
         console.log('Error getting channels ', error.message);
       });
   }
-  const loadChannel = (id) => {
-    setChannel(id)
+
+  const loadChannel = (channel) => {
+    setChannel(channel.id)
+    setChannelName(channel.channel_name)
     navigation.getParent('LeftDrawer').closeDrawer()
+  }
+
+  const longPressChannel = (channel) => {
+    setChannelModal(!channelModal)
+    setChannelName(channel.channel_name)
+  }
+
+  const loadDms = (id) => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/friends/${id}`)
+      .then(response => {
+        setChannels(response.data);
+        setServer(0);
+        setChannel(response.data[0]?.id)
+        setChannelName(response.data[0]?.username)
+        setUserList([])
+        setServerName('Direct Messages')
+      })
+      .catch(error => {
+        console.log('Error getting friends ', error.message);
+      });
+  }
+
+
+  const makeServerIcon = (serverName) => {
+    let splitServerName = serverName.split(' ')
+    if (splitServerName.length > 1) {
+      return `${splitServerName[0].slice(0,1)}${splitServerName[1].slice(0,1)}`
+    }
+    return serverName.slice(0,1)
   }
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+      <ChannelModal
+        channelModal={channelModal}
+        setChannelModal={setChannelModal}
+        channelName={channelName}
+      />
+      {/* server side bar */}
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
-        {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
-            <Text style={styles.title}>{server.server_name}</Text>
-          </Pressable>)
-        })}
-        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
-          <Text style={styles.title}>+</Text>
-        </Pressable>
+        <View style={styles.serverArea}>
+          <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
+            <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
+          </Pressable>
+          {servers.map((server) => {
+            return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
+              <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
+            </Pressable>)
+          })}
+          <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+            <Text style={styles.title}>+</Text>
+          </Pressable>
+        </View>
         <CreateServerModal
-            modalVisible={modalVisible}
-            setModalVisible={setModalVisible}
-            userId={userId}
-            getServers={getServers}
-          />
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          userId={userId}
+          getServers={getServers}
+        />
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
-        {channels.map((channel) => {
+      {/* channel area  */}
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
+        <View style={styles.channelArea}>
+          <Text style={styles.serverHeader}>{serverName}</Text>
+          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+            <Text>
+              Invite User
+            </Text>
+          </TouchableOpacity> : null}
+          <InviteUserModal
+            inviteModal={inviteModal}
+            setInviteModal={setInviteModal}
+            server={server}
+            setUserList={setUserList}
+          />
+          {server === 0
+            ? (
+              channels.map((friend) => {
+                return (<Pressable key={friend.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(friend)}>
+                  <Text style={styles.title}>{friend.username}</Text>
+                </Pressable>)
+              })
+            )
+            : (
+              channels.map((channel) => {
+                return (<Pressable key={channel.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
+                  <Text style={styles.title}>{channel.channel_name}</Text>
+                </Pressable>)
+              })
+            )
+          }
+        </View>
+
+        {/* {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
-        })}
+        })} */}
       </SafeAreaView>
     </View>
   );
 }
 
-const RightDrawerContent = ({userList}) => {
+const RightDrawerContent = ({userList, channelName, server}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const onlineUsers = [];
@@ -197,30 +374,34 @@ const RightDrawerContent = ({userList}) => {
             setModalVisible={setModalVisible}
             selectedUser={selectedUser}
             currentScreen="userList"
-          />
-          <View style={styles.topBar}>
-              <Text style={styles.topBarText}>
-              Channel Name
-            </Text>
-          </View>
-        <SectionList
-            sections={DATA}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                style={styles.userItem}
-                onPress={() => {
-                  setModalVisible(!modalVisible);
-                  setSelectedUser(item);
-                }}
-              >
-                  <Text style={styles.title}>{item.username}</Text>
-                </TouchableOpacity>
-            )}
-            renderSectionHeader={({section: {title, data}}) => (
-              <Text style={styles.header}>{title} - {data.length}</Text>
-            )}
-          />
+        />
+        <View style={styles.topBar}>
+          <Text style={styles.topBarText}>
+            {channelName}
+          </Text>
+        </View>
+        {server !== 0
+          ? (
+            <SectionList
+              sections={DATA}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  style={styles.userItem}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    setSelectedUser(item);
+                  }}
+                >
+                    <Text style={styles.title}>{item.username}</Text>
+                  </TouchableOpacity>
+              )}
+              renderSectionHeader={({section: {title, data}}) => (
+                <Text style={styles.header}>{title} - {data.length}</Text>
+              )}
+            />
+          ) : null
+        }
       </SafeAreaView>
     </View>
   );
@@ -232,9 +413,10 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
   const [channel, setChannel] = useState(0)
+  const [channelName, setChannelName] = useState('')
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    getServers();
+    getServers()
   }, [])
 
   const getServers = () => {
@@ -252,7 +434,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -260,18 +442,18 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         swipeEdgeWidth: width/2,
         headerShown: false,
         drawerStyle: {
-          width: '85%',
+          width: '90%',
           backgroundColor: '#36393e',
         }
       }}>
       <LeftDrawer.Screen name="Channel">
-        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} setDrawerStatus={setDrawerStatus} />}
+        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} channelName={channelName} userList={userList} setDrawerStatus={setDrawerStatus} />}
       </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
+const RightDrawerScreen = ({server, channel, userList, setDrawerStatus, channelName}) => {
   const drawerStatus = useDrawerStatus();
   useEffect(() => {
     setDrawerStatus(drawerStatus === 'open')
@@ -279,7 +461,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
-      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} />}
+      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} channelName={channelName} server={server} />}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
@@ -298,11 +480,20 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   );
 }
 
-const MainPage = ({ navigation, setDrawerStatus }) => {
+const MainPage = ({ navigation, setDrawerStatus, friends }) => {
   return (
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
 };
+
+const padding = function (a, b, c, d) {
+  return {
+    paddingTop: a,
+    paddingRight: b ? b : a,
+    paddingBottom: c ? c : a,
+    paddingLeft: d ? d : (b ? b : a)
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -324,14 +515,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     color: '#fff',
-  },
-  chatBar: {
-    backgroundColor: '#292b2f',
-    height: 40,
-    width: width,
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    color: '#71757c',
   },
   messageLine: {
     color: '#d5d6d6',
@@ -361,15 +544,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 12,
   },
+  // server stuff
+  serverArea: {
+    width: width*.20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   server: {
-    width: width*.18,
-    height: width*.18,
+    width: width*.12,
+    height: width*.12,
     borderRadius: width*.09,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     margin: width*.01,
     backgroundColor: '#5865f2',
+  },
+  // channel area in left drawer
+  channelArea: {
+    backgroundColor: '#222326',
+    height: height,
+    borderRadius: '10px',
+    ...padding(10),
+    marginRight: 10,
+    marginLeft: 7,
   },
   userItem: {
     padding: 10,
@@ -394,7 +592,125 @@ const styles = StyleSheet.create({
   topBarText: {
     fontSize: 20,
     color: '#fff',
-  }
+  },
+  editBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: '#2f3135',
+    width: width,
+    paddingHorizontal: 30,
+    marginTop: 10,
+  },
+  editBar: {
+    backgroundColor: '#2f3135',
+    padding: 10,
+  },
+  exit: {
+    backgroundColor: '#2f3135',
+    color: '#abadb0',
+    padding: 3,
+  },
+  reply: {
+    color: '#abadb0',
+  },
+  selectedMessageContainer: {
+    padding: 5,
+    flexDirection: 'row',
+    backgroundColor: '#3d414d',
+    width: width,
+  },
+  sendButton: {
+    overflow: 'hidden',
+    borderRadius: 30,
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  send: {
+    color: 'white',
+    backgroundColor: '#5864f1',
+    height: 33,
+    width: 33,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    paddingTop: 7,
+  },
+  bottomBar: {
+    width: width,
+    flexDirection: 'row',
+  },
+  bottomBar2: {
+    width: width,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  chatBar: {
+    backgroundColor: '#292b2f',
+    height: 40,
+    width: width,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    color: '#71757c',
+  },
+  chatBar2: {
+    backgroundColor: '#292b2f',
+    height: 40,
+    width: width * .88,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    color: '#71757c',
+  },
+  serverHeader: {
+    fontSize: 20,
+    color: '#fff',
+    marginTop: 2,
+    marginBottom: 10
+  },
+  inviteButton: {
+    backgroundColor: '#5865f2',
+    justifyContent:'center',
+    alignItems: 'center',
+    height: 24,
+    marginBottom: 10
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 });
 
 export default MainPage;
