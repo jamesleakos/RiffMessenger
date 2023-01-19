@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight, ScrollView, RefreshControl } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import { useFocusEffect } from '@react-navigation/native';
 import Constants from 'expo-constants';
@@ -121,7 +121,7 @@ const ChatScreen = ({server, channel}) => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e'}} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
        <SelectUsersModal
             modalVisible={modalVisible}
@@ -198,7 +198,7 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation, setServers}) => {
   const userId = React.useContext(UserId);
 
   const [serverName, setServerName] = useState('');
@@ -206,6 +206,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const [channelModal, setChannelModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadDms(userId);
@@ -266,85 +267,106 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
     }
     return serverName.slice(0,1)
   }
-  return (
-    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-      <ChannelModal
-        channelModal={channelModal}
-        setChannelModal={setChannelModal}
-        channelName={channelName}
-      />
-      {/* server side bar */}
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
-        <View style={styles.serverArea}>
-          <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
-            <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
-          </Pressable>
-          {servers.map((server) => {
-            return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
-              <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
-            </Pressable>)
-          })}
-          <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
-            <Text style={styles.title}>+</Text>
-          </Pressable>
-        </View>
-        <CreateServerModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          userId={userId}
-          getServers={getServers}
-        />
-      </SafeAreaView>
-      {/* channel area  */}
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
-        <View style={styles.channelArea}>
-          <Text style={styles.serverHeader}>{serverName}</Text>
-          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
-            <Text>
-              Invite User
-            </Text>
-          </TouchableOpacity> : null}
-          <InviteUserModal
-            inviteModal={inviteModal}
-            setInviteModal={setInviteModal}
-            server={server}
-            setUserList={setUserList}
-          />
-          {server === 0
-            ? (
-              channels.map((friend) => {
-                return (<Pressable key={friend.id} style={({pressed}) => [
-                  {
-                    backgroundColor: pressed ? '#494d54' : '#36393e',
-                  },
-                  styles.item,
-                ]} onPress={() => loadChannel(friend)}>
-                  <Text style={styles.title}>{friend.username}</Text>
-                </Pressable>)
-              })
-            )
-            : (
-              channels.map((channel) => {
-                return (<Pressable key={channel.id} style={({pressed}) => [
-                  {
-                    backgroundColor: pressed ? '#494d54' : '#36393e',
-                  },
-                  styles.item,
-                ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
-                  <Text style={styles.title}>{channel.channel_name}</Text>
-                </Pressable>)
-              })
-            )
-          }
-        </View>
 
-        {/* {channels.map((channel) => {
-          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
-            <Text style={styles.title}>{channel.channel_name}</Text>
-          </Pressable>)
-        })} */}
-      </SafeAreaView>
-    </View>
+  const onRefresh = () => {
+    setRefreshing(true);
+    console.log("Getting servers")
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    .then(response => {
+      setServers(response.data);
+      setRefreshing(false);
+    })
+    .catch(error => {
+      console.log('Error getting servers ', error.message);
+    });
+  };
+
+  return (
+    <ScrollView
+      progressViewOffset={8}
+      refreshControl={
+      <RefreshControl refreshing={refreshing}
+      onRefresh={onRefresh} />
+    }>
+      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <ChannelModal
+          channelModal={channelModal}
+          setChannelModal={setChannelModal}
+          channelName={channelName}
+        />
+        {/* server side bar */}
+        <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
+          <View style={styles.serverArea}>
+            <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
+              <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
+            </Pressable>
+            {servers.map((server) => {
+              return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
+                <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
+              </Pressable>)
+            })}
+            <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+              <Text style={styles.title}>+</Text>
+            </Pressable>
+          </View>
+          <CreateServerModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            userId={userId}
+            getServers={getServers}
+          />
+        </SafeAreaView>
+        {/* channel area  */}
+        <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
+          <View style={styles.channelArea}>
+            <Text style={styles.serverHeader}>{serverName}</Text>
+            {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+              <Text>
+                Invite User
+              </Text>
+            </TouchableOpacity> : null}
+            <InviteUserModal
+              inviteModal={inviteModal}
+              setInviteModal={setInviteModal}
+              server={server}
+              setUserList={setUserList}
+            />
+            {server === 0
+              ? (
+                channels.map((friend) => {
+                  return (<Pressable key={friend.id} style={({pressed}) => [
+                    {
+                      backgroundColor: pressed ? '#494d54' : '#36393e',
+                    },
+                    styles.item,
+                  ]} onPress={() => loadChannel(friend)}>
+                    <Text style={styles.title}>{friend.username}</Text>
+                  </Pressable>)
+                })
+              )
+              : (
+                channels.map((channel) => {
+                  return (<Pressable key={channel.id} style={({pressed}) => [
+                    {
+                      backgroundColor: pressed ? '#494d54' : '#36393e',
+                    },
+                    styles.item,
+                  ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
+                    <Text style={styles.title}>{channel.channel_name}</Text>
+                  </Pressable>)
+                })
+              )
+            }
+          </View>
+
+          {/* {channels.map((channel) => {
+            return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
+              <Text style={styles.title}>{channel.channel_name}</Text>
+            </Pressable>)
+          })} */}
+        </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -441,7 +463,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} setServers={setServers} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -658,6 +680,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginBottom: 10,
+    marginTop: 10
   },
   chatBar2: {
     backgroundColor: '#292b2f',
@@ -666,6 +690,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginBottom: 10,
+    marginTop: 10
   },
   serverHeader: {
     fontSize: 20,

@@ -15,8 +15,8 @@ export default function AuthStack() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Welcome" component={LandingScreen} options={{headerShown: false}}/>
-        <Stack.Screen name="Sign In" component={SignInScreen} />
-        <Stack.Screen name="Sign Up" component={SignUpScreen} />
+        <Stack.Screen name="Sign In" component={SignInScreen} options={{headerStyle: {backgroundColor: '#36393e'}, headerTitleStyle: {color: '#fff'}, headerTintColor: '#fff'}}/>
+        <Stack.Screen name="Sign Up" component={SignUpScreen} options={{headerStyle: {backgroundColor: '#36393e'}, headerTitleStyle: {color: '#fff'}, headerTintColor: '#fff'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
