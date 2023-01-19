@@ -28,7 +28,7 @@ const ChatScreen = ({server, channel}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [holdModalVisible, setHoldModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(['a', 'b']);
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState({})
@@ -38,7 +38,7 @@ const ChatScreen = ({server, channel}) => {
     if (server === 0) {
       axios.get(`${Constants.manifest?.extra?.apiUrl}/directmessages/${userId}/${channel}`)
       .then(response => {
-        const messageList = response.data || []
+        const messageList = Array.isArray(response.data) ? response.data : []
         setMessages(messageList);
       })
       .catch(error => {
@@ -240,8 +240,8 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
       .then(response => {
         setChannels(response.data);
         setServer(0);
-        setChannel(response.data[0].id)
-        setChannelName(response.data[0].username)
+        setChannel(response.data[0]?.id)
+        setChannelName(response.data[0]?.username)
         setUserList([])
         setServerName('Direct Messages')
       })
