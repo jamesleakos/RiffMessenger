@@ -14,6 +14,7 @@ import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
+import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,36 +32,6 @@ export const UserId = React.createContext()
 export default function UserStack({ user }) {
 
   const [userId, setUserId] = useState();
-
-  const [friends, setFriends] = useState([{
-    title: 'Online',
-  },
-  {
-    title: 'Offline',
-  },
-  ]);
-  if (Constants.expoConfig.extra.apiUrl) {
-    useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
-        .then((response) => {
-          const offline = [];
-          const online = [];
-          for (let i = 0; i < response.data.length; i += 1) {
-            if(response.data[i].online) {
-              online.push(response.data[i].username)
-            }
-            offline.push(response.data[i].username);
-          }
-          friends[1].data = offline;
-          friends[0].data = online;
-          setFriends([...friends]);
-          // console.log(friends);
-        })
-        .catch((err) => {
-          console.log('ERROR :', err.message);
-        });
-    }, []);
-  }
 
   useEffect(() => {
     if (user) {
@@ -116,8 +87,7 @@ export default function UserStack({ user }) {
           <Tab.Screen name="Main">
             {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
-          <Tab.Screen name="Friends">
-            {(props) => <FriendScreen { ...props } friends={friends} />}
+          <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
           <Tab.Screen name="Profile" component={AccountScreen} />
         </Tab.Navigator>
@@ -144,14 +114,13 @@ export default function UserStack({ user }) {
             tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
           })}>
             <Tab.Screen name="Main">
-              {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+              {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
             </Tab.Screen>
-            <Tab.Screen name="Friends">
-              {(props) => <FriendScreen { ...props } friends={friends} />}
+            <Tab.Screen name="Friends" component={FriendScreen}>
             </Tab.Screen>
             <Tab.Screen name="Profile" component={AccountScreen} />
           </Tab.Navigator>}
-        </UserId.Provider>
+      </UserId.Provider>
     </NavigationContainer>
   );
 }

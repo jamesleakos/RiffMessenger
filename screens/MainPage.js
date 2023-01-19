@@ -32,7 +32,6 @@ const ChatScreen = ({server, channel}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
-    console.log(user.uid)
     setMessages([...messages, message]);
   });
 
@@ -59,7 +58,7 @@ const ChatScreen = ({server, channel}) => {
     } else {
       return time.format("MM/DD/YYYY h:mm A");
     }
-}
+  }
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
@@ -160,8 +159,14 @@ const RightDrawerContent = ({userList, channelName}) => {
   const onlineUsers = [];
   const offlineUsers = [];
   userList.forEach((user) => {
-    if (user.online) onlineUsers.push(user.username)
-    else if (!user.online) offlineUsers.push(user.username)
+    if (user.online) onlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
+    else if (!user.online) offlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
   })
   const DATA = [
     {
@@ -198,7 +203,7 @@ const RightDrawerContent = ({userList, channelName}) => {
                   setSelectedUser(item);
                 }}
               >
-                  <Text style={styles.title}>{item}</Text>
+                  <Text style={styles.title}>{item.username}</Text>
                 </TouchableOpacity>
             )}
             renderSectionHeader={({section: {title, data}}) => (
@@ -298,6 +303,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     color: '#fff',
+    padding: 5,
+    backgroundColor: '#36393e',
   },
   title: {
     fontSize: 16,
@@ -366,7 +373,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     marginLeft: width / 4,
-    marginBottom: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-end',
   },
   topBarText: {
