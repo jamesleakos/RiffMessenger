@@ -29,6 +29,7 @@ const ChatScreen = ({server, channel}) => {
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState({})
+  const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
@@ -41,7 +42,9 @@ const ChatScreen = ({server, channel}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
+    console.log("Weeeeeee")
     setMessages([...messages, message]);
+
   });
 
   const sendMessage = () => {
@@ -74,6 +77,15 @@ const ChatScreen = ({server, channel}) => {
     setSelectedMessage({id: -1});
     setReplyEdits(false);
   }
+
+  const handleTextChange = (input) => {
+    setText(input);
+    if (input.length > 0) {
+      setShowButton(true);
+    } else {
+      setShowButton(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
@@ -124,14 +136,22 @@ const ChatScreen = ({server, channel}) => {
               </View>
             </View>
           }
-        <TextInput
-          style={ styles.chatBar }
-          value={text}
-          onChangeText={setText}
-          placeholder="Type a message..."
-          placeholderTextColor="#71757c"
-          />
-        <Button title="Send" onPress={sendMessage} />
+          <View style={text.length === 0 ? styles.bottomBar : styles.bottomBar2}>
+            <TextInput
+              style={ text.length === 0 ? styles.chatBar : styles.chatBar2 }
+              value={text}
+              onChangeText={handleTextChange}
+              placeholder="Type a message..."
+              placeholderTextColor="#71757c"
+              />
+              {showButton && (
+                <TouchableOpacity onPress={sendMessage}>
+                  <View style={styles.sendButton}>
+                    <Text style={styles.send}>></Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+           </View>
         <HoldMessageModal
           holdModalVisible={holdModalVisible}
           setHoldModalVisible={setHoldModalVisible}
@@ -359,14 +379,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
-  chatBar: {
-    backgroundColor: '#292b2f',
-    height: 40,
-    width: width,
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    color: '#71757c',
-  },
   messageLine: {
     color: '#d5d6d6',
   },
@@ -454,6 +466,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#3d414d',
     width: width,
+  },
+  sendButton: {
+    overflow: 'hidden',
+    borderRadius: 30,
+    justifyContent: 'center',
+    marginHorizontal: 5,
+  },
+  send: {
+    color: 'white',
+    backgroundColor: '#5864f1',
+    height: 33,
+    width: 33,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    paddingTop: 7,
+  },
+  bottomBar: {
+    width: width,
+    flexDirection: 'row',
+  },
+  bottomBar2: {
+    width: width,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  chatBar: {
+    backgroundColor: '#292b2f',
+    height: 40,
+    width: width,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    color: '#71757c',
+  },
+  chatBar2: {
+    backgroundColor: '#292b2f',
+    height: 40,
+    width: width * .88,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    color: '#71757c',
   },
 });
 

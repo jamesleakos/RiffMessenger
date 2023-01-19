@@ -142,7 +142,7 @@ function HoldMessageModal({holdModalVisible, setHoldModalVisible, setReplyEdits}
           directionalLockEnabled
           // centerContent={true}
           contentInset={{
-            top: height / 2, left: 0, bottom: 0, right: 0,
+            top: height, left: 0, bottom: 0, right: 0,
           }}
           onScrollEndDrag={() => setHoldModalVisible(!holdModalVisible)}
         >
