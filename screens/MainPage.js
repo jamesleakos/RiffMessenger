@@ -96,7 +96,7 @@ const ChatScreen = ({server, channel}) => {
 };
 
 const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChannelName, setUserList, navigation}) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [channelModal, setChannelModal] = useState(false);
   const [channels, setChannels] = useState([])
   const loadChannels = (server) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
@@ -125,15 +125,15 @@ const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChan
   }
 
   const longPressChannel = (channel) => {
-    setModalVisible(!modalVisible)
+    setChannelModal(!channelModal)
     setChannelName(channel.channel_name)
   }
 
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
       <ChannelModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
+        channelModal={channelModal}
+        setChannelModal={setChannelModal}
         channelName={channelName}
       />
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
