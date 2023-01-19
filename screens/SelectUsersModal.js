@@ -1,4 +1,6 @@
 import React from 'react';
+import axios from 'axios';
+import Constants from 'expo-constants';
 import {
   View,
   Text,
@@ -14,6 +16,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { UserId } from '../navigation/userStack'
 
 const { width, height } = Dimensions.get('window');
 
@@ -91,9 +94,31 @@ const styles = StyleSheet.create({
   },
 });
 
+const addFriend = (user_id, friend_id) => {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/addFriend`, { user_id, friend_id })
+    .then(() => {
+      console.log('succesfully added friend');
+    })
+    .catch((err) => {
+      console.log('Error adding friend', err);
+    });
+};
+
+const removeFriend = (user_id, friend_id) => {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/removeFriend`, { user_id, friend_id })
+    .then(() => {
+      console.log('succesfully added friend');
+    })
+    .catch((err) => {
+      console.log('Error adding friend', err);
+    });
+};
+
 function SelectUsersModal({
   modalVisible, setModalVisible, selectedUser, currentScreen,
+  friendRemoved, setFriendRemoved,
 }) {
+  const userId = React.useContext(UserId);
   return !modalVisible ? null : (
     <Modal
       animationType="slide"
@@ -121,7 +146,7 @@ function SelectUsersModal({
           <TouchableWithoutFeedback>
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>
-                {selectedUser}
+                {selectedUser.username}
               </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
@@ -134,7 +159,11 @@ function SelectUsersModal({
                   ? (
                     <TouchableOpacity
                       style={[styles.button, styles.buttonInteractive]}
-                      onPress={() => console.log('clicked')}
+                      onPress={() => {
+                        removeFriend(userId, selectedUser.id);
+                        setFriendRemoved(!friendRemoved);
+                        setModalVisible(!modalVisible);
+                      }}
                     >
                       <Text style={styles.textStyle}>Remove Friend</Text>
                     </TouchableOpacity>
@@ -142,7 +171,7 @@ function SelectUsersModal({
                   : (
                     <TouchableOpacity
                       style={[styles.button, styles.buttonInteractive]}
-                      onPress={() => console.log('clicked')}
+                      onPress={() => addFriend(userId, selectedUser.id)}
                     >
                       <Text style={styles.textStyle}>Add Friend</Text>
                     </TouchableOpacity>

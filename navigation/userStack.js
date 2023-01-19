@@ -6,14 +6,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text, StatusBar, TouchableOpacity, Button, Pressable } from 'react-native';
 
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
+// import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,45 +31,19 @@ export const UserId = React.createContext()
 
 export default function UserStack({ user }) {
 
-  const [userId, setUserId] = useState();
+  const auth = getAuth();
 
-  const [friends, setFriends] = useState([{
-    title: 'Online',
-  },
-  {
-    title: 'Offline',
-  },
-  ]);
-  if (Constants.expoConfig.extra.apiUrl) {
-    useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
-        .then((response) => {
-          const offline = [];
-          const online = [];
-          for (let i = 0; i < response.data.length; i += 1) {
-            if(response.data[i].online) {
-              online.push(response.data[i].username)
-            }
-            offline.push(response.data[i].username);
-          }
-          friends[1].data = offline;
-          friends[0].data = online;
-          setFriends([...friends]);
-          // console.log(friends);
-        })
-        .catch((err) => {
-          console.log('ERROR :', err.message);
-        });
-    }, []);
-  }
+  const [userId, setUserId] = useState();
+  const [userName, setUserName] = useState();
 
   useEffect(() => {
     if (user) {
       setTimeout(() => {
         axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
           .then((response) => {
-            console.log(response.data.id)
-            setUserId(response.data.id)
+            // console.log(response.data.id)
+            setUserId(response.data.id);
+            setUserName(response.data.username);
           })
           .catch((err) => {
             console.log(err);
@@ -80,7 +55,12 @@ export default function UserStack({ user }) {
   const [drawerStatus, setDrawerStatus] = useState(true)
   if (!userId) {
     return (
-      <View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#36393e', color: '#36393e' }}>
+        <Pressable style={{ color: '#36393e' }}onPress={() => signOut(auth) }>
+          <Text style={{fontSize: 24, color: '#36393e'}}>
+            Log Out
+          </Text>
+        </Pressable>
       </View>
     )
   }
@@ -116,10 +96,11 @@ export default function UserStack({ user }) {
           <Tab.Screen name="Main">
             {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
           </Tab.Screen>
-          <Tab.Screen name="Friends">
-            {(props) => <FriendScreen { ...props } friends={friends} />}
+          <Tab.Screen name="Friends" component={FriendScreen}>
           </Tab.Screen>
-          <Tab.Screen name="Profile" component={AccountScreen} />
+          <Tab.Screen name="Profile">
+              {(props) => <AccountScreen { ...props } userName={userName} />}
+          </Tab.Screen>
         </Tab.Navigator>
         : <Tab.Navigator screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
@@ -144,14 +125,15 @@ export default function UserStack({ user }) {
             tabBarStyle: { backgroundColor: '#36393e', display: 'none' }
           })}>
             <Tab.Screen name="Main">
-              {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
+              {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
             </Tab.Screen>
-            <Tab.Screen name="Friends">
-              {(props) => <FriendScreen { ...props } friends={friends} />}
-            </Tab.Screen>
-            <Tab.Screen name="Profile" component={AccountScreen} />
+            <Tab.Screen name="Friends" component={FriendScreen}>
+          </Tab.Screen>
+          <Tab.Screen name="Profile">
+              {(props) => <AccountScreen { ...props } userName={userName} />}
+          </Tab.Screen>
           </Tab.Navigator>}
-        </UserId.Provider>
+      </UserId.Provider>
     </NavigationContainer>
   );
 }
