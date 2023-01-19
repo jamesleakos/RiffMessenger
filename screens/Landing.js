@@ -20,7 +20,8 @@ export default function Landing({ navigation }) {
       </View>
       <View style={styles.bottomContainer}>
         <Text style={styles.welcome}>Welcome to Riff</Text>
-        <Text style={styles.tagline}>Join people who use Riff to talk with communities and friends.</Text>
+        <Text style={styles.tagline}>Join people who use Riff to talk</Text>
+        <Text style={styles.tagline}>with communities and friends.</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Sign Up')}>
             <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
@@ -49,6 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 30,
+    flexDirection: 'column',
   },
   name: {
     fontSize: 48,
@@ -83,6 +85,5 @@ const styles = StyleSheet.create({
   tagline: {
     color: '#7F7F7F',
     topPadding: 10,
-    width: width * .5
   },
 });

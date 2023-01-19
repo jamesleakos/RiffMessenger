@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StatusBar, TouchableOpacity, Button, Pressable } from 'react-native';
 
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { UserId } from '../utils/hooks/context.js'
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -26,8 +27,6 @@ function TempScreen() {
     </View>
   );
 }
-
-export const UserId = React.createContext()
 
 export default function UserStack({ user }) {
 
@@ -71,7 +70,7 @@ export default function UserStack({ user }) {
         {/* <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator> */}
-        {drawerStatus
+        {/* {drawerStatus
           ? <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                   let iconName;
@@ -132,7 +131,37 @@ export default function UserStack({ user }) {
           <Tab.Screen name="Profile">
               {(props) => <AccountScreen { ...props } userName={userName} />}
           </Tab.Screen>
-          </Tab.Navigator>}
+          </Tab.Navigator>} */}
+          <Tab.Navigator screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
+
+                if (route.name === 'Main') {
+                  iconName = focused
+                    ? 'home'
+                    : 'home-outline';
+                } else if (route.name === 'Friends') {
+                  iconName = focused ? 'people' : 'people-outline';
+                } else if (route.name === 'Profile') {
+                  iconName = focused ? 'information-circle' : 'information-circle-outline';
+                }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#fff',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: { backgroundColor: '#36393e' }
+        })}>
+          <Tab.Screen name="Main">
+            {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
+          </Tab.Screen>
+          <Tab.Screen name="Friends" component={FriendScreen}>
+          </Tab.Screen>
+          <Tab.Screen name="Profile">
+              {(props) => <AccountScreen { ...props } userName={userName} />}
+          </Tab.Screen>
+        </Tab.Navigator>
       </UserId.Provider>
     </NavigationContainer>
   );

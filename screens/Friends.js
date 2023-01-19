@@ -21,8 +21,9 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
 import SafeViewAndroid from '../utils/hooks/SafeViewAndroid';
-import { UserId } from '../navigation/userStack';
+
 import InviteUserModal from './InviteUserModal';
+import { UserId } from '../utils/hooks/context';
 
 const { width, height } = Dimensions.get('window');
 

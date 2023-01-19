@@ -114,34 +114,21 @@ const styles = StyleSheet.create({
 
 });
 
-function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFriendInvite, friendRemoved}) {
+function CreateChannelModal({createChannelModal, setCreateChannelModal, server, loadChannels}) {
 
-  const [username, setUsername] = useState('');
+  const [channelName, setChannelName] = useState('');
 
-  const handleAddFriendByUsername = () => {
-    console.log('userId:', server);
-    axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/username`, { server, username })// server = userId
-      .then(() => {
-        setUserList(!friendRemoved);
-        console.log('succesfully added friend');
-      })
-      .catch((err) => {
-        console.log('Error adding friend', err);
-      });
-
-    // console.log('add friend', username, 'with userId ', server);
-  };
-
-  const handleInviteUser = () => {
-    axios.post(`${Constants.manifest?.extra?.apiUrl}/servers/${server}`, {
-      username: username
+  const handleCreateChannel = () => {
+    axios.post(`${Constants.manifest?.extra?.apiUrl}/channels`, {
+      channel_name: channelName,
+      server_id: server,
     })
       .then(() => {
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${server}/users`)
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server}`)
           .then(response => {
-            setUserList(response.data);
-            setInviteModal(!inviteModal);
-            setUsername('');
+            //loadChannels();
+            setCreateChannelModal(!createChannelModal);
+            setChannelName('');
           })
           .catch(error => {
             console.log('Error getting users in server ', error.message);
@@ -152,20 +139,20 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
       })
   }
 
-  return !inviteModal ? null : (
+  return !createChannelModal ? null : (
     <Modal
       animationType="slide"
       transparent
-      visible={inviteModal}
+      visible={createChannelModal}
       onRequestClose={() => {
-        setInviteModal(!inviteModal);
+        setCreateChannelModal(!createChannelModal);
       }}
     >
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
         onPressOut={() => {
-          setInviteModal(!inviteModal);
+          setCreateChannelModal(!createChannelModal);
         }}
       >
         <ScrollView
@@ -174,45 +161,21 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
           contentInset={{
             top: height / 2, left: 0, bottom: 0, right: 0,
           }}
-          onScrollEndDrag={() => setInviteModal(!inviteModal)}
+          onScrollEndDrag={() => setCreateChannelModal(!createChannelModal)}
         >
             <View style={styles.modalView}>
-              { isFriendInvite
-                ? (
-                  <View>
-                    <Text style={styles.modalTitle}>Add a Friend</Text>
-                    <Text style={styles.subheader}>Send a friend an invite!</Text>
-                  </View>
-                ) : (
-                  <View>
-                    <Text style={styles.modalTitle}>Invite A User</Text>
-                    <Text style={styles.subheader}>Invite a friend to hang out!</Text>
-                  </View>
-                )}
+              <Text style={styles.modalTitle}>Create A Channel</Text>
+              <Text style={styles.subheader}>Create a new channel for everyone to talk in!</Text>
               <View style={styles.container}>
-              <Text style={styles.label}>Username</Text>
+              <Text style={styles.label}>New Channel Name</Text>
               <TextInput
                 style={styles.input}
-                onChangeText={text => setUsername(text)}
-                value={username}
+                onChangeText={text => setChannelName(text)}
+                value={channelName}
               />
-
-                { isFriendInvite
-                  ? (
-                    <Pressable
-                      style={styles.button}
-                      onPress={() => {
-                        handleAddFriendByUsername();
-                        setInviteModal(!inviteModal);
-                      }}
-                    >
-                      <Text style={styles.buttonText}>Add Friend</Text>
-                    </Pressable>
-                  ) : (
-                    <Pressable style={styles.button} onPress={() => handleInviteUser()}>
-                      <Text style={styles.buttonText}>Invite</Text>
-                    </Pressable>
-                  )}
+              <Pressable style={styles.button} onPress={() => handleCreateChannel()}>
+                <Text style={styles.buttonText}>Create</Text>
+              </Pressable>
               </View>
             </View>
         </ScrollView>
@@ -221,4 +184,4 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
   );
 }
 
-export default InviteUserModal;
+export default CreateChannelModal;
