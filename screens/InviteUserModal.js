@@ -118,6 +118,18 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
 
   const [username, setUsername] = useState('');
 
+  const handleAddFriendByUsername = () => {
+    // axios.post(`${Constants.expoConfig.extra.apiUrl}/friends`, { user_id, friend_id })
+    //   .then(() => {
+    //     console.log('succesfully added friend');
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error adding friend', err);
+    //   });
+    // server = userId
+    console.log('add friend', username, 'with userId ', server);
+  };
+
   const handleInviteUser = () => {
     axios.post(`${Constants.manifest?.extra?.apiUrl}/servers/${server}`, {
       username: username
@@ -164,17 +176,17 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
         >
             <View style={styles.modalView}>
               { isFriendInvite
-              ?
-                <View>
-                  <Text style={styles.modalTitle}>Add a Friend</Text>
-                  <Text style={styles.subheader}>Send a friend an invite!</Text>
-                </View>
-                  :
-                <View>
-                  <Text style={styles.modalTitle}>Invite A User</Text>
-                  <Text style={styles.subheader}>Invite a friend to hang out!</Text>
-                </View>
-                }
+                ? (
+                  <View>
+                    <Text style={styles.modalTitle}>Add a Friend</Text>
+                    <Text style={styles.subheader}>Send a friend an invite!</Text>
+                  </View>
+                ) : (
+                  <View>
+                    <Text style={styles.modalTitle}>Invite A User</Text>
+                    <Text style={styles.subheader}>Invite a friend to hang out!</Text>
+                  </View>
+                )}
               <View style={styles.container}>
               <Text style={styles.label}>Username</Text>
               <TextInput
@@ -182,9 +194,17 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
                 onChangeText={text => setUsername(text)}
                 value={username}
               />
-              <Pressable style={styles.button} onPress={() => handleInviteUser()}>
-                <Text style={styles.buttonText}>Invite</Text>
-              </Pressable>
+
+                { isFriendInvite
+                  ? (
+                    <Pressable style={styles.button} onPress={() => handleAddFriendByUsername()}>
+                      <Text style={styles.buttonText}>Add Friend</Text>
+                    </Pressable>
+                  ) : (
+                    <Pressable style={styles.button} onPress={() => handleInviteUser()}>
+                      <Text style={styles.buttonText}>Invite</Text>
+                    </Pressable>
+                  )}
               </View>
             </View>
         </ScrollView>
