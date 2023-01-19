@@ -8,6 +8,7 @@ import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
+import CreateServerModal from './CreateServerModal';
 
 import { UserId } from '../navigation/userStack'
 
@@ -94,8 +95,11 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigation}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserList, navigation}) => {
   const [channels, setChannels] = useState([])
+  const [modalVisible, setModalVisible] = useState(false);
+  const userId = React.useContext(UserId);
+
   const loadChannels = (id) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
       .then(response => {
@@ -126,6 +130,15 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigat
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
+        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+          <Text style={styles.title}>+</Text>
+        </Pressable>
+        <CreateServerModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            userId={userId}
+            getServers={getServers}
+          />
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
@@ -144,8 +157,14 @@ const RightDrawerContent = ({userList}) => {
   const onlineUsers = [];
   const offlineUsers = [];
   userList.forEach((user) => {
-    if (user.online) onlineUsers.push(user.username)
-    else if (!user.online) offlineUsers.push(user.username)
+    if (user.online) onlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
+    else if (!user.online) offlineUsers.push({
+      id: user.id,
+      username: user.username,
+    })
   })
   const DATA = [
     {
@@ -182,7 +201,7 @@ const RightDrawerContent = ({userList}) => {
                   setSelectedUser(item);
                 }}
               >
-                  <Text style={styles.title}>{item}</Text>
+                  <Text style={styles.title}>{item.username}</Text>
                 </TouchableOpacity>
             )}
             renderSectionHeader={({section: {title, data}}) => (
@@ -202,20 +221,25 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [channel, setChannel] = useState(0)
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
-      .then(response => {
-        setServers(response.data);
-      })
-      .catch(error => {
-        console.log('Error getting servers ', error.message);
-      });
+    getServers();
   }, [])
+
+  const getServers = () => {
+    console.log("Getting servers")
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    .then(response => {
+      setServers(response.data);
+    })
+    .catch(error => {
+      console.log('Error getting servers ', error.message);
+    });
+  };
 
   return (
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -261,8 +285,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   );
 }
 
-const MainPage = ({ navigation, setDrawerStatus, friends }) => {
-  // console.log('friends in main page', friends);
+const MainPage = ({ navigation, setDrawerStatus }) => {
   return (
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
@@ -282,6 +305,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     color: '#fff',
+    padding: 5,
+    backgroundColor: '#36393e',
   },
   title: {
     fontSize: 16,
@@ -350,7 +375,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     marginLeft: width / 4,
-    marginBottom: 20,
+    paddingBottom: 20,
     justifyContent: 'flex-end',
   },
   topBarText: {

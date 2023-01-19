@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,12 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
+import axios from 'axios';
+import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
-import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import SafeViewAndroid from '../utils/hooks/SafeViewAndroid';
 
 const { width, height } = Dimensions.get('window');
 
@@ -73,23 +77,50 @@ const styles = StyleSheet.create({
 
 });
 
-function FriendsPage({ friends }) {
+function FriendsPage({ route, u }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  // const [friends, setFriends] = useState(
-  //   [{
-  //     title: 'Online',
-  //     data: ['friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5', 'friend2', 'friend3', 'friend4', 'friend5'],
-  //   },
-  //   {
-  //     title: 'Offline',
-  //     data: ['friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1', 'friend1'],
-  //   }],
-  // );
-  // todo add online/offline count to backend
-  return (
+  const [friendRemoved, setFriendRemoved] = useState(false);
+  const [friends, setFriends] = useState([{
+    title: 'Online',
+  },
+  {
+    title: 'Offline',
+  },
+  ]);
+  useFocusEffect(
+    React.useCallback(() => {
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${1}`)// configure apiURL in .env
+        .then((response) => {
+          console.log('useEffect', route);
+          const offline = [];
+          const online = [];
+          for (let i = 0; i < response.data.length; i += 1) {
+            if (response.data[i].online) {
+              online.push({
+                id: response.data[i].id,
+                username: response.data[i].username,
+              });
+            } else {
+              offline.push({
+                id: response.data[i].id,
+                username: response.data[i].username,
+              });
+            }
+          }
+          friends[1].data = offline;
+          friends[0].data = online;
+          setFriends([...friends]);
+        })
+        .catch((err) => {
+          console.log('ERROR :', err.message);
+        });
+    }, [friendRemoved]),
+  );
+  // console.log('friends: ', friends);
+  return !friends[0].data ? null : (
     <View style={styles.container}>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
+      <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
         </View>
@@ -98,6 +129,8 @@ function FriendsPage({ friends }) {
           setModalVisible={setModalVisible}
           selectedUser={selectedUser}
           currentScreen="friendsList"
+          friendRemoved={friendRemoved}
+          setFriendRemoved={setFriendRemoved}
         />
         <SectionList
           sections={friends}
@@ -110,7 +143,7 @@ function FriendsPage({ friends }) {
                 setSelectedUser(item);
               }}
             >
-              <Text style={styles.title}>{item}</Text>
+              <Text style={styles.title}>{item.username}</Text>
             </TouchableOpacity>
           )}
           renderSectionHeader={({ section: { title, data } }) => (
