@@ -14,7 +14,7 @@ import CreateServerModal from './CreateServerModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
 import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 
 const LeftDrawer = createDrawerNavigator();
@@ -442,7 +442,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         swipeEdgeWidth: width/2,
         headerShown: false,
         drawerStyle: {
-          width: '85%',
+          width: '90%',
           backgroundColor: '#36393e',
         }
       }}>
@@ -562,10 +562,12 @@ const styles = StyleSheet.create({
   },
   // channel area in left drawer
   channelArea: {
-    backgroundColor: 'black',
+    backgroundColor: '#222326',
     height: height,
     borderRadius: 10,
-    ...padding(10)
+    ...padding(10),
+    marginRight: 10,
+    marginLeft: 7,
   },
   userItem: {
     padding: 10,
