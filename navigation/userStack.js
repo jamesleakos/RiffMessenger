@@ -44,11 +44,15 @@ export default function UserStack({ user }) {
       axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
           const offline = [];
+          const online = [];
           for (let i = 0; i < response.data.length; i += 1) {
+            if(response.data[i].online) {
+              online.push(response.data[i].username)
+            }
             offline.push(response.data[i].username);
           }
           friends[1].data = offline;
-          friends[0].data = [];
+          friends[0].data = online;
           setFriends([...friends]);
           // console.log(friends);
         })
@@ -94,34 +98,34 @@ export default function UserStack({ user }) {
                 tabBarIcon: ({ focused, color, size }) => {
                   let iconName;
 
-                  if (route.name === 'Main') {
-                    iconName = focused
-                      ? 'home'
-                      : 'home-outline';
-                  } else if (route.name === 'Friends') {
-                    iconName = focused ? 'people' : 'people-outline';
-                  } else if (route.name === 'Profile') {
-                    iconName = focused ? 'information-circle' : 'information-circle-outline';
-                  }
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: '#fff',
-            tabBarInactiveTintColor: '#fff',
-            headerShown: false,
-            tabBarShowLabel: false,
-            tabBarStyle: { backgroundColor: '#36393e' }
-          })}>
-            <Tab.Screen name="Main">
-              {(props) => <MainPage { ...props } friends={friends} setDrawerStatus={setDrawerStatus} />}
-            </Tab.Screen>
-            <Tab.Screen name="Friends">
-              {(props) => <FriendScreen { ...props } friends={friends} />}
-            </Tab.Screen>
-            <Tab.Screen name="Profile" component={AccountScreen} />
-          </Tab.Navigator>
-          : <Tab.Navigator screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
+                if (route.name === 'Main') {
+                  iconName = focused
+                    ? 'home'
+                    : 'home-outline';
+                } else if (route.name === 'Friends') {
+                  iconName = focused ? 'people' : 'people-outline';
+                } else if (route.name === 'Profile') {
+                  iconName = focused ? 'information-circle' : 'information-circle-outline';
+                }
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#fff',
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: { backgroundColor: '#36393e' }
+        })}>
+          <Tab.Screen name="Main">
+            {(props) => <MainPage { ...props }  setDrawerStatus={setDrawerStatus} />}
+          </Tab.Screen>
+          <Tab.Screen name="Friends">
+            {(props) => <FriendScreen { ...props } friends={friends} />}
+          </Tab.Screen>
+          <Tab.Screen name="Profile" component={AccountScreen} />
+        </Tab.Navigator>
+        : <Tab.Navigator screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
 
               if (route.name === 'Main') {
                 iconName = focused
