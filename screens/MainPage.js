@@ -442,7 +442,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         swipeEdgeWidth: width/2,
         headerShown: false,
         drawerStyle: {
-          width: '85%',
+          width: '90%',
           backgroundColor: '#36393e',
         }
       }}>
@@ -562,10 +562,12 @@ const styles = StyleSheet.create({
   },
   // channel area in left drawer
   channelArea: {
-    backgroundColor: 'black',
+    backgroundColor: '#222326',
     height: height,
     borderRadius: '10px',
-    ...padding(10)
+    ...padding(10),
+    marginRight: 10,
+    marginLeft: -10
   },
   userItem: {
     padding: 10,
