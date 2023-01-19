@@ -240,7 +240,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         setUserList([])
       })
       .catch(error => {
-        console.log('Error getting channels ', error.message);
+        console.log('Error getting friends ', error.message);
       });
   }
 
