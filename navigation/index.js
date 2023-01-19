@@ -1,11 +1,15 @@
 // app-wide navigation for all states
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import UserStack from './userStack';
 import AuthStack from './authStack';
+import axios from 'axios';
+import { getAuth, signOut } from 'firebase/auth';
 
 export default function RootNavigation() {
+  // const auth = getAuth();
+  // signOut(auth);
   const { user } = useAuthentication();
 
-  return user ? <UserStack /> : <AuthStack />;
+  return user ? <UserStack user={user} /> : <AuthStack />;
 }
