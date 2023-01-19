@@ -13,7 +13,9 @@ import {
   Modal,
   Pressable,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
+import SelectUsersModal from './SelectUsersModal';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
 
 const { width, height } = Dimensions.get('window');
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
   header: {
     color: '#fff',
     fontSize: 18,
-    margin: 10,
+    padding: 10,
     width,
     backgroundColor: '#36393e',
     borderBottomWidth: 1,
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 24,
     marginBottom: 10,
     marginTop: 10,
   },
@@ -57,9 +59,9 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   topBar: {
-    backgroundColor: '#17181e',
+    backgroundColor: '#36393e',
     width,
-    height: 90,
+    height: 60,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -68,66 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  modalView: {
-    display: 'flex',
-    backgroundColor: '#36393e',
-    borderRadiusTop: 20,
-    height: height / 2,
-    padding: 35,
-    width,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    justifyContent: 'flex-start',
-  },
-  buttonContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  buttonInteractive: {
-    height: 80,
-    margin: 10,
-    backgroundColor: '#17181e',
-    flex: 1,
-  },
-  buttonClose: {
-    margin: 10,
-    backgroundColor: '#17181e',
-    width: width / 2,
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    color: '#fff',
-  },
-  modalTitle: {
-    fontSize: 24,
-    marginBottom: 15,
-    textAlign: 'center',
-    color: '#fff',
-  },
+
 });
 
 function FriendsPage({ friends }) {
@@ -147,42 +90,15 @@ function FriendsPage({ friends }) {
   return (
     <View style={styles.container}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
-        <Modal
-          animationType="slide"
-          transparent
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Hide Modal</Text>
-              </Pressable>
-              <Text style={styles.modalTitle}>
-                {selectedUser}
-              </Text>
-              <View style={styles.buttonContainer}>
-                <Pressable
-                  style={[styles.button, styles.buttonInteractive]}
-                  onPress={() => console.log('clicked')}
-                >
-                  <Text style={styles.textStyle}>Send Message</Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.button, styles.buttonInteractive]}
-                  onPress={() => console.log('clicked')}
-                >
-                  <Text style={styles.textStyle}>Add Friend</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <View style={styles.topBar}>
+          <Text style={styles.pageTitle}>Friends</Text>
+        </View>
+        <SelectUsersModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          selectedUser={selectedUser}
+          currentScreen="friendsList"
+        />
         <SectionList
           sections={friends}
           keyExtractor={(item, index) => item + index}
