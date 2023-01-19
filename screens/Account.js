@@ -21,7 +21,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
 import axios from 'axios';
 import Constants from 'expo-constants';
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
 
 const auth = getAuth();
 

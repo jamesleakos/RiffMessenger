@@ -14,7 +14,7 @@ import CreateServerModal from './CreateServerModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
 import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 
 const LeftDrawer = createDrawerNavigator();
