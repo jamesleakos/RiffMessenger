@@ -41,7 +41,7 @@ export default function UserStack({ user }) {
   ]);
   if (Constants.expoConfig.extra.apiUrl) {
     useEffect(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
           const offline = [];
           for (let i = 0; i < response.data.length; i += 1) {
@@ -63,8 +63,10 @@ export default function UserStack({ user }) {
       setTimeout(() => {
         axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
         .then((response) => {
-          console.log(response.data)
           setUserId(response.data.id)
+          .catch((err) => {
+            console.log('ERROR :', err.message);
+          });
         })
         .catch((err) => {
           console.log(err);
