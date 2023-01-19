@@ -14,7 +14,8 @@ import CreateServerModal from './CreateServerModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
 
-import { UserId } from '../navigation/userStack'
+import { UserId } from '../utils/hooks/context'
+import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -272,18 +273,21 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         setChannelModal={setChannelModal}
         channelName={channelName}
       />
+      {/* server side bar */}
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
-        <Pressable key={1} style={styles.server} onPress={() => loadDms(userId)}>
-          <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
-        </Pressable>
-        {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server)}>
-            <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
-          </Pressable>)
-        })}
-        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
-          <Text style={styles.title}>+</Text>
-        </Pressable>
+        <View style={styles.serverArea}>
+          <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
+            <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
+          </Pressable>
+          {servers.map((server) => {
+            return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
+              <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
+            </Pressable>)
+          })}
+          <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+            <Text style={styles.title}>+</Text>
+          </Pressable>
+        </View>
         <CreateServerModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
@@ -291,45 +295,49 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
           getServers={getServers}
         />
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginHorizontal: 12}}>
-        <Text style={styles.serverHeader}>{serverName}</Text>
-        {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
-          <Text>
-            Invite User
-          </Text>
-        </TouchableOpacity> : null}
-        <InviteUserModal
-          inviteModal={inviteModal}
-          setInviteModal={setInviteModal}
-          server={server}
-          setUserList={setUserList}
-        />
-        {server === 0
-          ? (
-            channels.map((friend) => {
-              return (<Pressable key={friend.id} style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#494d54' : '#36393e',
-                },
-                styles.item,
-              ]} onPress={() => loadChannel(friend)}>
-                <Text style={styles.title}>{friend.username}</Text>
-              </Pressable>)
-            })
-          )
-          : (
-            channels.map((channel) => {
-              return (<Pressable key={channel.id} style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#494d54' : '#36393e',
-                },
-                styles.item,
-              ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
-                <Text style={styles.title}>{channel.channel_name}</Text>
-              </Pressable>)
-            })
-          )
-        }
+      {/* channel area  */}
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
+        <View style={styles.channelArea}>
+          <Text style={styles.serverHeader}>{serverName}</Text>
+          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+            <Text>
+              Invite User
+            </Text>
+          </TouchableOpacity> : null}
+          <InviteUserModal
+            inviteModal={inviteModal}
+            setInviteModal={setInviteModal}
+            server={server}
+            setUserList={setUserList}
+          />
+          {server === 0
+            ? (
+              channels.map((friend) => {
+                return (<Pressable key={friend.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(friend)}>
+                  <Text style={styles.title}>{friend.username}</Text>
+                </Pressable>)
+              })
+            )
+            : (
+              channels.map((channel) => {
+                return (<Pressable key={channel.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
+                  <Text style={styles.title}>{channel.channel_name}</Text>
+                </Pressable>)
+              })
+            )
+          }
+        </View>
+
         {/* {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
@@ -441,7 +449,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         swipeEdgeWidth: width/2,
         headerShown: false,
         drawerStyle: {
-          width: '85%',
+          width: '90%',
           backgroundColor: '#36393e',
         }
       }}>
@@ -484,6 +492,15 @@ const MainPage = ({ navigation, setDrawerStatus, friends }) => {
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
 };
+
+const padding = function (a, b, c, d) {
+  return {
+    paddingTop: a,
+    paddingRight: b ? b : a,
+    paddingBottom: c ? c : a,
+    paddingLeft: d ? d : (b ? b : a)
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -534,15 +551,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     fontSize: 12,
   },
+  // server stuff
+  serverArea: {
+    width: width*.20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   server: {
-    width: width*.18,
-    height: width*.18,
+    width: width*.12,
+    height: width*.12,
     borderRadius: width*.09,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     margin: width*.01,
     backgroundColor: '#5865f2',
+  },
+  // channel area in left drawer
+  channelArea: {
+    backgroundColor: '#222326',
+    height: height,
+    borderRadius: '10px',
+    ...padding(10),
+    marginRight: 10,
+    marginLeft: 7,
   },
   userItem: {
     padding: 10,

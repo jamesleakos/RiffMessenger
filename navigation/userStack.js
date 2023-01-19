@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StatusBar, TouchableOpacity, Button, Pressable } from 'react-native';
 
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { UserId } from '../utils/hooks/context.js'
 
 import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
@@ -26,8 +27,6 @@ function TempScreen() {
     </View>
   );
 }
-
-export const UserId = React.createContext()
 
 export default function UserStack({ user }) {
 
