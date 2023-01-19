@@ -100,7 +100,20 @@ const styles = StyleSheet.create({
 });
 
 const addFriend = (friend_id) => {
-  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends`, {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/addFriend`, {
+    user_id: 1,
+    friend_id,
+  })
+    .then(() => {
+      console.log('succesfully added friend');
+    })
+    .catch((err) => {
+      console.log('Error adding friend', err);
+    });
+};
+
+const removeFriend = (friend_id) => {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/removeFriend`, {
     user_id: 1,
     friend_id,
   })
@@ -114,6 +127,7 @@ const addFriend = (friend_id) => {
 
 function SelectUsersModal({
   modalVisible, setModalVisible, selectedUser, currentScreen,
+  friendRemoved, setFriendRemoved,
 }) {
   console.log('selectedUser', selectedUser);
   return !modalVisible ? null : (
@@ -157,7 +171,9 @@ function SelectUsersModal({
                     <TouchableOpacity
                       style={[styles.button, styles.buttonInteractive]}
                       onPress={() => {
-                        setModalVisible(!modalVisible)
+                        removeFriend(selectedUser.id);
+                        setFriendRemoved(!friendRemoved);
+                        setModalVisible(!modalVisible);
                       }}
                     >
                       <Text style={styles.textStyle}>Remove Friend</Text>

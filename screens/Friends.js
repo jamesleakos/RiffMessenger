@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
 function FriendsPage({ route, u }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
+  const [friendRemoved, setFriendRemoved] = useState(false);
   const [friends, setFriends] = useState([{
     title: 'Online',
   },
@@ -114,7 +115,7 @@ function FriendsPage({ route, u }) {
         .catch((err) => {
           console.log('ERROR :', err.message);
         });
-    }, []),
+    }, [friendRemoved]),
   );
   // console.log('friends: ', friends);
   return !friends[0].data ? null : (
@@ -128,6 +129,8 @@ function FriendsPage({ route, u }) {
           setModalVisible={setModalVisible}
           selectedUser={selectedUser}
           currentScreen="friendsList"
+          friendRemoved={friendRemoved}
+          setFriendRemoved={setFriendRemoved}
         />
         <SectionList
           sections={friends}
