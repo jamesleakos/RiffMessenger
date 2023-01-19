@@ -289,7 +289,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         />
       </SafeAreaView>
       {/* channel area  */}
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginHorizontal: 4}}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
         <View style={styles.channelArea}>
           <Text style={styles.serverHeader}>{serverName}</Text>
           {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
   channelArea: {
     backgroundColor: 'black',
     height: height,
-    borderRadius: '10px',
+    borderRadius: 10,
     ...padding(10)
   },
   userItem: {
