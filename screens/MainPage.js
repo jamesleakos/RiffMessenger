@@ -119,52 +119,54 @@ const ChatScreen = ({server, channel}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-       <SelectUsersModal
+          <SelectUsersModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
             selectedUser={selectedUser}
             currentScreen="userList"
           />
-        <FlatList
-          style={{marginHorizontal: 16}}
-          inverted
-          data={[...messages].reverse()}
-          keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => (
-            <TouchableWithoutFeedback
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                setSelectedUser(item);
-              }}
-              onLongPress={() => {
-                setReplyEdits(false)
-                setSelectedMessage(item)
-                setHoldModalVisible(true);
-              }}
-            >
-              <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
-              <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
-              <View style={styles.textContainer}>
-                <View style={styles.topLine}>
-                  <Text style={styles.username}>{item.username}</Text>
-                  <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
+          {/* <View style={styles.textArea}> */}
+            <FlatList
+              style={{...styles.textSpace, marginHorizontal: 16}}
+              inverted
+              data={[...messages].reverse()}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({ item }) => (
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    setSelectedUser(item);
+                  }}
+                  onLongPress={() => {
+                    setReplyEdits(false)
+                    setSelectedMessage(item)
+                    setHoldModalVisible(true);
+                  }}
+                >
+                  <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
+                    <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
+                    <View style={styles.textContainer}>
+                      <View style={styles.topLine}>
+                        <Text style={styles.username}>{item.username}</Text>
+                        <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
+                      </View>
+                      <Text style={styles.messageLine}>{item.message}</Text>
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              )}
+            />
+          {/* </View> */}
+            {replyEdits &&
+              <View style={styles.editBarContainer}>
+                <Pressable onPress={() => closeEdit()}>
+                  <Text style={styles.exit} >X</Text>
+                </Pressable>
+                <View style={styles.editBar}>
+                  <Text style={styles.reply}>{`Replying to ${selectedMessage.username}`}</Text>
                 </View>
-                <Text style={styles.messageLine}>{item.message}</Text>
               </View>
-              </View>
-            </TouchableWithoutFeedback>
-          )}
-          />
-          {replyEdits &&
-            <View style={styles.editBarContainer}>
-              <Pressable onPress={() => closeEdit()}>
-                <Text style={styles.exit} >X</Text>
-              </Pressable>
-              <View style={styles.editBar}>
-                <Text style={styles.reply}>{`Replying to ${selectedMessage.username}`}</Text>
-              </View>
-            </View>
-          }
+            }
           <View style={text.length === 0 ? styles.bottomBar : styles.bottomBar2}>
             <TextInput
               style={ text.length === 0 ? styles.chatBar : styles.chatBar2 }
@@ -180,12 +182,12 @@ const ChatScreen = ({server, channel}) => {
                   </View>
                 </TouchableOpacity>
               )}
-           </View>
-        <HoldMessageModal
-          holdModalVisible={holdModalVisible}
-          setHoldModalVisible={setHoldModalVisible}
-          setReplyEdits={setReplyEdits}
-        />
+          </View>
+          <HoldMessageModal
+            holdModalVisible={holdModalVisible}
+            setHoldModalVisible={setHoldModalVisible}
+            setReplyEdits={setReplyEdits}
+          />
         </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -529,6 +531,12 @@ const styles = StyleSheet.create({
     padding: 5,
     flexDirection: 'row',
   },
+  textSpace: {
+    margin: 10,
+    ...padding(10),
+    backgroundColor: '#222326',
+    borderRadius: '10px'
+  },
   textContainer: {
     flexDirection: 'column',
     paddingHorizontal: 10,
@@ -623,6 +631,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 30,
     justifyContent: 'center',
+    marginBottom: 10,
     marginHorizontal: 5,
   },
   send: {
@@ -651,6 +660,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginHorizontal: 20,
+    marginBottom: 10,
+    width: width*.9
   },
   chatBar2: {
     backgroundColor: '#292b2f',
@@ -659,6 +671,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginHorizontal: 10,
+    marginBottom: 10,
+    width: width*.8
   },
   serverHeader: {
     fontSize: 20,
