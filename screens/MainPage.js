@@ -268,10 +268,10 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
       />
       {/* server side bar */}
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
-        <Pressable key={1} style={styles.server} onPress={() => loadDms(userId)}>
-          <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
-        </Pressable>
         <View style={styles.serverArea}>
+          <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
+            <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
+          </Pressable>
           {servers.map((server) => {
             return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
               <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
@@ -288,45 +288,49 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
           getServers={getServers}
         />
       </SafeAreaView>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginHorizontal: 12}}>
-        <Text style={styles.serverHeader}>{serverName}</Text>
-        {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
-          <Text>
-            Invite User
-          </Text>
-        </TouchableOpacity> : null}
-        <InviteUserModal
-          inviteModal={inviteModal}
-          setInviteModal={setInviteModal}
-          server={server}
-          setUserList={setUserList}
-        />
-        {server === 0
-          ? (
-            channels.map((friend) => {
-              return (<Pressable key={friend.id} style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#494d54' : '#36393e',
-                },
-                styles.item,
-              ]} onPress={() => loadChannel(friend)}>
-                <Text style={styles.title}>{friend.username}</Text>
-              </Pressable>)
-            })
-          )
-          : (
-            channels.map((channel) => {
-              return (<Pressable key={channel.id} style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#494d54' : '#36393e',
-                },
-                styles.item,
-              ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
-                <Text style={styles.title}>{channel.channel_name}</Text>
-              </Pressable>)
-            })
-          )
-        }
+      {/* channel area  */}
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginHorizontal: 4}}>
+        <View style={styles.channelArea}>
+          <Text style={styles.serverHeader}>{serverName}</Text>
+          {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
+            <Text>
+              Invite User
+            </Text>
+          </TouchableOpacity> : null}
+          <InviteUserModal
+            inviteModal={inviteModal}
+            setInviteModal={setInviteModal}
+            server={server}
+            setUserList={setUserList}
+          />
+          {server === 0
+            ? (
+              channels.map((friend) => {
+                return (<Pressable key={friend.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(friend)}>
+                  <Text style={styles.title}>{friend.username}</Text>
+                </Pressable>)
+              })
+            )
+            : (
+              channels.map((channel) => {
+                return (<Pressable key={channel.id} style={({pressed}) => [
+                  {
+                    backgroundColor: pressed ? '#494d54' : '#36393e',
+                  },
+                  styles.item,
+                ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
+                  <Text style={styles.title}>{channel.channel_name}</Text>
+                </Pressable>)
+              })
+            )
+          }
+        </View>
+
         {/* {channels.map((channel) => {
           return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
