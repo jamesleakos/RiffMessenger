@@ -75,14 +75,18 @@ const ChatScreen = ({server, channel}) => {
         channel_id: null,
         user_id: userId,
         recipient_id: channel,
+        reply: null,
       }
     } else {
+      console.log(selectedMessage["id"])
+      let reply_id = selectedMessage["id"];
       messageObj = {
         message: text,
         server_id: server,
         channel_id: channel,
         user_id: userId,
         recipient_id: 0,
+        reply: reply_id,
       }
     }
 
@@ -104,7 +108,7 @@ const ChatScreen = ({server, channel}) => {
     }
 
   const closeEdit = () => {
-    setSelectedMessage({id: -1});
+    setSelectedMessage({id: 0});
     setReplyEdits(false);
   }
 
@@ -143,15 +147,18 @@ const ChatScreen = ({server, channel}) => {
                 setHoldModalVisible(true);
               }}
             >
-              <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
-              <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
-              <View style={styles.textContainer}>
-                <View style={styles.topLine}>
-                  <Text style={styles.username}>{item.username}</Text>
-                  <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
+              <View>
+              {item.reply && <Text style={styles.replyMessage}>{`Reply to: ${messages.find(message => message.id === item.reply).message}`}</Text>}
+                <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
+                <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
+                <View style={styles.textContainer}>
+                  <View style={styles.topLine}>
+                    <Text style={styles.username}>{item.username}</Text>
+                    <Text style={styles.timestamp}>{formatTimeAgo(item.created_at)}</Text>
+                  </View>
+                  <Text style={styles.messageLine}>{item.message}</Text>
                 </View>
-                <Text style={styles.messageLine}>{item.message}</Text>
-              </View>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           )}
@@ -724,6 +731,10 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
   },
+  replyMessage: {
+    color: 'white',
+    marginHorizontal: 45,
+  }
 });
 
 export default MainPage;
