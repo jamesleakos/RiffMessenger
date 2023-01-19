@@ -31,7 +31,6 @@ const ChatScreen = ({server, channel}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
-    console.log(user.uid)
     setMessages([...messages, message]);
   });
 
@@ -58,7 +57,7 @@ const ChatScreen = ({server, channel}) => {
     } else {
       return time.format("MM/DD/YYYY h:mm A");
     }
-}
+  }
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>

@@ -14,6 +14,7 @@ import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
+import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -116,10 +117,10 @@ export default function UserStack({ user }) {
               {(props) => <MainPage { ...props } setDrawerStatus={setDrawerStatus} />}
             </Tab.Screen>
             <Tab.Screen name="Friends" component={FriendScreen}>
-          </Tab.Screen>
+            </Tab.Screen>
             <Tab.Screen name="Profile" component={AccountScreen} />
           </Tab.Navigator>}
-        </UserId.Provider>
+      </UserId.Provider>
     </NavigationContainer>
   );
 }

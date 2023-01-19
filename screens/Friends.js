@@ -21,6 +21,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
 import SafeViewAndroid from '../utils/hooks/SafeViewAndroid';
+import { UserId } from '../navigation/userStack';
 
 const { width, height } = Dimensions.get('window');
 
@@ -77,7 +78,8 @@ const styles = StyleSheet.create({
 
 });
 
-function FriendsPage({ route, u }) {
+function FriendsPage({ route }) {
+  const userId = React.useContext(UserId);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [friendRemoved, setFriendRemoved] = useState(false);
@@ -90,7 +92,7 @@ function FriendsPage({ route, u }) {
   ]);
   useFocusEffect(
     React.useCallback(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${1}`)// configure apiURL in .env
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
           console.log('useEffect', route);
           const offline = [];
