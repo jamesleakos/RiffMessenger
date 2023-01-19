@@ -53,7 +53,6 @@ export default function SignUp({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text>Signup screen!</Text>
 
       {!!value.error && <View style={styles.error}><Text>{value.error}</Text></View>}
 
@@ -63,6 +62,7 @@ export default function SignUp({ navigation }) {
           containerStyle={styles.control}
           value={value.email}
           onChangeText={(text) => setValue({ ...value, email: text })}
+          style={{color: 'white'}}
           // leftIcon={<Icon
           //   name='envelope'
           //   size={16}
@@ -74,6 +74,7 @@ export default function SignUp({ navigation }) {
           containerStyle={styles.control}
           value={value.username}
           onChangeText={(text) => setValue({ ...value, username: text })}
+          style={{color: 'white'}}
           // leftIcon={<Icon
           //   name='envelope'
           //   size={16}
@@ -92,7 +93,7 @@ export default function SignUp({ navigation }) {
           // />}
         />
 
-        <Button title="Sign up" buttonStyle={styles.control} onPress={signUp} />
+        <Button title="Sign up" buttonStyle={styles.buttonControl} onPress={signUp} />
       </View>
     </View>
   );
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#36393e',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -114,6 +115,12 @@ const styles = StyleSheet.create({
   control: {
     marginTop: 10,
     width: width * .8
+  },
+
+  buttonControl: {
+    marginTop: 10,
+    width: width * .8,
+    backgroundColor: '#7289da'
   },
 
   error: {

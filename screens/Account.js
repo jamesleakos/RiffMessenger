@@ -19,6 +19,9 @@ import {
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import axios from 'axios';
+import Constants from 'expo-constants';
+import { UserId } from '../navigation/userStack'
 
 const auth = getAuth();
 

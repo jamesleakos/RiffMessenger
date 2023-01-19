@@ -18,6 +18,8 @@ const RightDrawer = createDrawerNavigator();
 var {width, height} = Dimensions.get('window');
 
 const ChatScreen = ({server, channel}) => {
+  const userId = React.useContext(UserId);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const { user } = useAuthentication();
@@ -34,7 +36,6 @@ const ChatScreen = ({server, channel}) => {
   }, [channel]);
 
   socket.on('new_message', (message) => {
-    console.log(user.uid)
     setMessages([...messages, message]);
   });
 
@@ -44,7 +45,7 @@ const ChatScreen = ({server, channel}) => {
       message: text,
       server_id: server,
       channel_id: channel,
-      user_id: 1,
+      user_id: userId,
       recipient_id: 0,
     }
     socket.emit('message', messageObj);
