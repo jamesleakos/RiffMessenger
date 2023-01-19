@@ -60,14 +60,16 @@ export default function UserStack({ user }) {
 
   useEffect(() => {
     if (user) {
-      axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
-      .then((response) => {
-        console.log(response.data)
-        setUserId(response.data.id)
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      setTimeout(() => {
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
+        .then((response) => {
+          console.log(response.data)
+          setUserId(response.data.id)
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      }, 300)
     }
   }, [])
 
@@ -75,7 +77,6 @@ export default function UserStack({ user }) {
   if (!userId) {
     return (
       <View>
-        <Text>Loading</Text>
       </View>
     )
   }

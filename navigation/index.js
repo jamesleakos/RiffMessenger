@@ -5,8 +5,6 @@ import UserStack from './userStack';
 import AuthStack from './authStack';
 import axios from 'axios';
 
-export const UserId = React.createContext();
-
 export default function RootNavigation() {
   const { user } = useAuthentication();
 
