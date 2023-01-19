@@ -117,7 +117,7 @@ const ChatScreen = ({server, channel}) => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
+    <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e'}} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
        <SelectUsersModal
             modalVisible={modalVisible}
@@ -263,6 +263,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
 
   const onRefresh = () => {
     setRefreshing(true);
+    console.log("Getting servers")
     axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
     .then(response => {
       setServers(response.data);
@@ -275,6 +276,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
 
   return (
     <ScrollView
+      progressViewOffset={8}
       refreshControl={
       <RefreshControl refreshing={refreshing}
       onRefresh={onRefresh} />
@@ -671,6 +673,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginBottom: 10
   },
   chatBar2: {
     backgroundColor: '#292b2f',
@@ -679,6 +682,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 20,
     color: '#71757c',
+    marginBottom: 10
   },
   serverHeader: {
     fontSize: 20,
