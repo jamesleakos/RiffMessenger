@@ -21,12 +21,6 @@ import { UserId } from '../utils/hooks/context'
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-  },
   modalOverlay: {
     position: 'absolute',
     display: 'flex',
