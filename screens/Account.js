@@ -19,6 +19,9 @@ import {
 } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import SafeViewAndroid from "../utils/hooks/SafeViewAndroid";
+import axios from 'axios';
+import Constants from 'expo-constants';
+import { UserId } from '../navigation/userStack'
 
 const auth = getAuth();
 
@@ -34,18 +37,20 @@ const styles = StyleSheet.create({
   item: {
     padding: 10,
     justifyContent: 'center',
-    backgroundColor: '#17181e',
     fontSize: 14,
     height: 50,
     borderBottomWidth: 1,
-    borderColor: '#36393e',
+    borderColor: '#17181e',
     color: '#fff',
   },
   header: {
-    fontSize: 20,
-    marginBottom: 20,
-    marginHorizontal: 10,
     color: '#fff',
+    fontSize: 36,
+    padding: 10,
+    width,
+    backgroundColor: '#36393e',
+    borderBottomWidth: 1,
+    borderColor: '#17181e',
   },
   title: {
     fontSize: 16,
@@ -53,14 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const MenuButton = (content, route) => (
-  <TouchableOpacity onPress={() => signOut(auth)}>
-    <Text style={styles.item}>{content}</Text>
-  </TouchableOpacity>
-);
-
-function Account() {
-  let userName = 'tempName';
+function Account({ userName }) {
   const [pageData, setPageData] = useState([
     {
       title: userName,
@@ -69,7 +67,7 @@ function Account() {
         { text: 'Change Email', action: () => console.log('clicked') },
         { text: 'Change Password', action: () => console.log('clicked') },
         { text: 'Delete Account', action: () => console.log('clicked') },
-        { text: 'View Friends Request', action: () => console.log('clicked') },
+        { text: 'View Friend Requests', action: () => console.log('clicked') },
         { text: 'Sign Out', action: () => signOut(auth) }],
     },
   ]);

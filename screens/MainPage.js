@@ -9,6 +9,7 @@ import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
 import ChannelModal from './ChannelModal';
+import CreateServerModal from './CreateServerModal';
 
 import { UserId } from '../navigation/userStack'
 
@@ -21,6 +22,8 @@ const ChatScreen = ({server, channel}) => {
   const userId = 27
   // React.useContext(UserId);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('');
   const { user } = useAuthentication();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
@@ -90,13 +93,23 @@ const ChatScreen = ({server, channel}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e', }} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+       <SelectUsersModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            selectedUser={selectedUser}
+            currentScreen="userList"
+          />
         <FlatList
           style={{marginHorizontal: 16}}
           inverted
           data={[...messages].reverse()}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => (
-            <View style={styles.messageContainer}>
+            <TouchableOpacity style={styles.messageContainer}onPress={() => {
+              setModalVisible(!modalVisible);
+              setSelectedUser(item);
+            }}
+            >
               <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
               <View style={styles.textContainer}>
                 <View style={styles.topLine}>
@@ -105,7 +118,7 @@ const ChatScreen = ({server, channel}) => {
                 </View>
                 <Text style={styles.messageLine}>{item.message}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
           />
         <TextInput
@@ -121,7 +134,7 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation}) => {
   const userId = 27
   // React.useContext(UserId);
 
@@ -188,6 +201,15 @@ const LeftDrawerContent = ({servers, setServer, server, setChannel, channelName,
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
+        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+          <Text style={styles.title}>+</Text>
+        </Pressable>
+        <CreateServerModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            userId={userId}
+            getServers={getServers}
+          />
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {server === 0
@@ -288,20 +310,25 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [channelName, setChannelName] = useState('')
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
-      .then(response => {
-        setServers(response.data);
-      })
-      .catch(error => {
-        console.log('Error getting servers ', error.message);
-      });
+    getServers();
   }, [])
+
+  const getServers = () => {
+    console.log("Getting servers")
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    .then(response => {
+      setServers(response.data);
+    })
+    .catch(error => {
+      console.log('Error getting servers ', error.message);
+    });
+  };
 
   return (
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',

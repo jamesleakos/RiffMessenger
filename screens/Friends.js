@@ -68,14 +68,20 @@ const styles = StyleSheet.create({
     width,
     height: 60,
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 16,
     color: '#fff',
   },
-
+  addFriend: {
+    position: 'absolute',
+    color: '#fff',
+    top: 0,
+    left: 100,
+  },
 });
 
 function FriendsPage({ route }) {
@@ -94,7 +100,6 @@ function FriendsPage({ route }) {
     React.useCallback(() => {
       axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
-          console.log('useEffect', route);
           const offline = [];
           const online = [];
           for (let i = 0; i < response.data.length; i += 1) {
@@ -125,6 +130,7 @@ function FriendsPage({ route }) {
       <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
+          <TouchableOpacity><Text style={styles.addFriend}>Add</Text></TouchableOpacity>
         </View>
         <SelectUsersModal
           modalVisible={modalVisible}

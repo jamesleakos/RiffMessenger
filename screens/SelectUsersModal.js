@@ -16,6 +16,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { UserId } from '../navigation/userStack'
 
 const { width, height } = Dimensions.get('window');
 
@@ -93,11 +94,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const addFriend = (friend_id) => {
-  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/addFriend`, {
-    user_id: 1,
-    friend_id,
-  })
+const addFriend = (user_id, friend_id) => {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/addFriend`, { user_id, friend_id })
     .then(() => {
       console.log('succesfully added friend');
     })
@@ -106,11 +104,8 @@ const addFriend = (friend_id) => {
     });
 };
 
-const removeFriend = (friend_id) => {
-  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/removeFriend`, {
-    user_id: 1,
-    friend_id,
-  })
+const removeFriend = (user_id, friend_id) => {
+  axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/removeFriend`, { user_id, friend_id })
     .then(() => {
       console.log('succesfully added friend');
     })
@@ -123,7 +118,7 @@ function SelectUsersModal({
   modalVisible, setModalVisible, selectedUser, currentScreen,
   friendRemoved, setFriendRemoved,
 }) {
-  console.log('selectedUser', selectedUser);
+  const userId = React.useContext(UserId);
   return !modalVisible ? null : (
     <Modal
       animationType="slide"
@@ -165,7 +160,7 @@ function SelectUsersModal({
                     <TouchableOpacity
                       style={[styles.button, styles.buttonInteractive]}
                       onPress={() => {
-                        removeFriend(selectedUser.id);
+                        removeFriend(userId, selectedUser.id);
                         setFriendRemoved(!friendRemoved);
                         setModalVisible(!modalVisible);
                       }}
@@ -176,7 +171,7 @@ function SelectUsersModal({
                   : (
                     <TouchableOpacity
                       style={[styles.button, styles.buttonInteractive]}
-                      onPress={() => addFriend(selectedUser.id)}
+                      onPress={() => addFriend(userId, selectedUser.id)}
                     >
                       <Text style={styles.textStyle}>Add Friend</Text>
                     </TouchableOpacity>
