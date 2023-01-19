@@ -54,9 +54,9 @@ export default function UserStack({ user }) {
   const [drawerStatus, setDrawerStatus] = useState(true)
   if (!userId) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#36393e' }}>
-        <Pressable onPress={() => signOut(auth) }>
-          <Text style={{fontSize: 24, color: 'black'}}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#36393e', color: '#36393e' }}>
+        <Pressable style={{ color: '#36393e' }}onPress={() => signOut(auth) }>
+          <Text style={{fontSize: 24, color: '#36393e'}}>
             Log Out
           </Text>
         </Pressable>
