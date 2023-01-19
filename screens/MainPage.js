@@ -8,6 +8,7 @@ import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
+import CreateServerModal from './CreateServerModal';
 
 import { UserId } from '../navigation/userStack'
 
@@ -94,8 +95,11 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigation}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, setChannel, setUserList, navigation}) => {
   const [channels, setChannels] = useState([])
+  const [modalVisible, setModalVisible] = useState(false);
+  const userId = React.useContext(UserId);
+
   const loadChannels = (id) => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
       .then(response => {
@@ -126,6 +130,15 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigat
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
+        <Pressable style={styles.server} onPress={() => setModalVisible(true)}>
+          <Text style={styles.title}>+</Text>
+        </Pressable>
+        <CreateServerModal
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            userId={userId}
+            getServers={getServers}
+          />
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
@@ -202,20 +215,25 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [channel, setChannel] = useState(0)
   const [userList, setUserList] = useState([])
   useEffect(() => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
-      .then(response => {
-        setServers(response.data);
-      })
-      .catch(error => {
-        console.log('Error getting servers ', error.message);
-      });
+    getServers();
   }, [])
+
+  const getServers = () => {
+    console.log("Getting servers")
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    .then(response => {
+      setServers(response.data);
+    })
+    .catch(error => {
+      console.log('Error getting servers ', error.message);
+    });
+  };
 
   return (
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
