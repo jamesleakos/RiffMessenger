@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, SectionList, Button, StyleSheet, StatusBar, FlatList, TextInput, SafeAreaView, Pressable, Image, KeyboardAvoidingView, TouchableOpacity, Modal } from 'react-native';
 import { createDrawerNavigator, useDrawerStatus } from '@react-navigation/drawer';
 import Constants from 'expo-constants';
 import socket from '../utils/hooks/socket';
@@ -8,6 +8,7 @@ import moment from 'moment';
 import { useAuthentication } from '../utils/hooks/useAuthentication';
 import axios from 'axios';
 import SelectUsersModal from './SelectUsersModal';
+import ChannelModal from './ChannelModal';
 
 const LeftDrawer = createDrawerNavigator();
 const RightDrawer = createDrawerNavigator();
@@ -93,15 +94,17 @@ const ChatScreen = ({server, channel}) => {
   );
 };
 
-const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigation}) => {
+const LeftDrawerContent = ({servers, setServer, setChannel, channelName, setChannelName, setUserList, navigation}) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
-  const loadChannels = (id) => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${id}`)
+  const loadChannels = (server) => {
+    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
       .then(response => {
         setChannels(response.data);
-        setServer(id);
+        setServer(server.id);
         setChannel(response.data[0].id)
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${id}/users`)
+        setChannelName(response.data[0].channel_name)
+        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${server.id}/users`)
           .then(response => {
             setUserList(response.data);
           })
@@ -113,22 +116,35 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigat
         console.log('Error getting channels ', error.message);
       });
   }
-  const loadChannel = (id) => {
-    setChannel(id)
+
+  const loadChannel = (channel) => {
+    setChannel(channel.id)
+    setChannelName(channel.channel_name)
     navigation.getParent('LeftDrawer').closeDrawer()
   }
+
+  const longPressChannel = (channel) => {
+    setModalVisible(!modalVisible)
+    setChannelName(channel.channel_name)
+  }
+
   return (
     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+      <ChannelModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        channelName={channelName}
+      />
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         {servers.map((server) => {
-          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server.id)}>
+          return (<Pressable key={server.id} style={styles.server} onPress={() => loadChannels(server)}>
             <Text style={styles.title}>{server.server_name}</Text>
           </Pressable>)
         })}
       </SafeAreaView>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3}}>
         {channels.map((channel) => {
-          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel.id)}>
+          return (<Pressable key={channel.id} style={styles.item} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
             <Text style={styles.title}>{channel.channel_name}</Text>
           </Pressable>)
         })}
@@ -137,7 +153,7 @@ const LeftDrawerContent = ({servers, setServer, setChannel, setUserList, navigat
   );
 }
 
-const RightDrawerContent = ({userList}) => {
+const RightDrawerContent = ({userList, channelName}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const onlineUsers = [];
@@ -166,8 +182,8 @@ const RightDrawerContent = ({userList}) => {
             currentScreen="userList"
           />
           <View style={styles.topBar}>
-              <Text style={styles.topBarText}>
-              Channel Name
+            <Text style={styles.topBarText}>
+              {channelName}
             </Text>
           </View>
         <SectionList
@@ -197,6 +213,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   const [servers, setServers] = useState([])
   const [server, setServer] = useState(0)
   const [channel, setChannel] = useState(0)
+  const [channelName, setChannelName] = useState('')
   const [userList, setUserList] = useState([])
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/1`)
@@ -212,7 +229,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} setUserList={setUserList} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} servers={servers} setServer={setServer} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -225,13 +242,13 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         }
       }}>
       <LeftDrawer.Screen name="Channel">
-        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} userList={userList} setDrawerStatus={setDrawerStatus} />}
+        {(props) => <RightDrawerScreen {...props} server={server} channel={channel} channelName={channelName} userList={userList} setDrawerStatus={setDrawerStatus} />}
       </LeftDrawer.Screen>
     </LeftDrawer.Navigator>
   );
 }
 
-const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
+const RightDrawerScreen = ({server, channel, userList, setDrawerStatus, channelName}) => {
   const drawerStatus = useDrawerStatus();
   useEffect(() => {
     setDrawerStatus(drawerStatus === 'open')
@@ -239,7 +256,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
-      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} />}
+      drawerContent={(props) => <RightDrawerContent {...props} userList={userList} channelName={channelName} />}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
@@ -259,7 +276,6 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus}) => {
 }
 
 const MainPage = ({ navigation, setDrawerStatus, friends }) => {
-  // console.log('friends in main page', friends);
   return (
     <LeftDrawerScreen setDrawerStatus={setDrawerStatus} navigation={navigation} />
   );
@@ -353,7 +369,45 @@ const styles = StyleSheet.create({
   topBarText: {
     fontSize: 20,
     color: '#fff',
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
 });
 
 export default MainPage;

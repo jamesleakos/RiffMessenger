@@ -10,14 +10,19 @@ import {
   SectionList,
   SafeAreaView,
   Modal,
-  Pressable,
-  Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  centeredView: {
+    display: 'flex',
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    marginTop: '25%',
+  },
   modalOverlay: {
     position: 'absolute',
     display: 'flex',
@@ -32,8 +37,6 @@ const styles = StyleSheet.create({
   modalView: {
     display: 'flex',
     backgroundColor: '#36393e',
-    borderRadiusTop: 20,
-    height: height / 2,
     padding: 10,
     width,
     alignItems: 'center',
@@ -91,8 +94,8 @@ const styles = StyleSheet.create({
   },
 });
 
-function SelectUsersModal({
-  modalVisible, setModalVisible, selectedUser, currentScreen,
+function ChannelModal({
+  modalVisible, setModalVisible, channelName,
 }) {
   return !modalVisible ? null : (
     <Modal
@@ -101,8 +104,7 @@ function SelectUsersModal({
       visible={modalVisible}
       onRequestClose={() => {
         setModalVisible(!modalVisible);
-      }}
-    >
+      }}>
       <TouchableOpacity
         style={styles.modalOverlay}
         activeOpacity={1}
@@ -110,51 +112,32 @@ function SelectUsersModal({
           setModalVisible(!modalVisible);
         }}
       >
-        <ScrollView
-          directionalLockEnabled
-          // centerContent={true}
-          contentInset={{
-            top: height / 2, left: 0, bottom: 0, right: 0,
-          }}
-          onScrollEndDrag={() => setModalVisible(!modalVisible)}
-        >
-          <TouchableWithoutFeedback>
+        <TouchableWithoutFeedback>
+          <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>
-                {selectedUser}
+                {channelName}
               </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.buttonInteractive]}
                   onPress={() => console.log('clicked')}
                 >
-                  <Text style={styles.textStyle}>Send Message</Text>
+                  <Text style={styles.textStyle}>Change name</Text>
                 </TouchableOpacity>
-                {currentScreen === 'friendsList'
-                  ? (
-                    <TouchableOpacity
-                      style={[styles.button, styles.buttonInteractive]}
-                      onPress={() => console.log('clicked')}
-                    >
-                      <Text style={styles.textStyle}>Remove Friend</Text>
-                    </TouchableOpacity>
-                  )
-                  : (
-                    <TouchableOpacity
-                      style={[styles.button, styles.buttonInteractive]}
-                      onPress={() => console.log('clicked')}
-                    >
-                      <Text style={styles.textStyle}>Add Friend</Text>
-                    </TouchableOpacity>
-                  )}
-
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonInteractive]}
+                  onPress={() => console.log('clicked')}
+                >
+                  <Text style={styles.textStyle}>Delete</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </TouchableWithoutFeedback>
-        </ScrollView>
+          </View>
+        </TouchableWithoutFeedback>
       </TouchableOpacity>
     </Modal>
   );
 }
 
-export default SelectUsersModal;
+export default ChannelModal;
