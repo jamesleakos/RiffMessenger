@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 
 });
 
-function InviteUserModal({inviteModal, setInviteModal, server, setUserList}) {
+function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFriendInvite}) {
 
   const [username, setUsername] = useState('');
 
@@ -163,8 +163,18 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList}) {
           onScrollEndDrag={() => setInviteModal(!inviteModal)}
         >
             <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>Invite A User</Text>
-              <Text style={styles.subheader}>Invite a friend to hang out!</Text>
+              { isFriendInvite
+              ?
+                <View>
+                  <Text style={styles.modalTitle}>Add a Friend</Text>
+                  <Text style={styles.subheader}>Send a friend an invite!</Text>
+                </View>
+                  :
+                <View>
+                  <Text style={styles.modalTitle}>Invite A User</Text>
+                  <Text style={styles.subheader}>Invite a friend to hang out!</Text>
+                </View>
+                }
               <View style={styles.container}>
               <Text style={styles.label}>Username</Text>
               <TextInput
