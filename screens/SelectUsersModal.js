@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
 
 const addFriend = (friend_id) => {
   axios.post(`${Constants.expoConfig.extra.apiUrl}/friends`, {
-    user_id: 27,
+    user_id: 1,
     friend_id,
   })
     .then(() => {

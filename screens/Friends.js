@@ -15,6 +15,8 @@ import {
   Alert,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 import axios from 'axios';
 import Constants from 'expo-constants';
 import SelectUsersModal from './SelectUsersModal';
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
 
 });
 
-function FriendsPage() {
+function FriendsPage({ route, u }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [friends, setFriends] = useState([{
@@ -85,33 +87,35 @@ function FriendsPage() {
     title: 'Offline',
   },
   ]);
-  useEffect(() => {
-    axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${27}`)// configure apiURL in .env
-      .then((response) => {
-        const offline = [];
-        const online = [];
-        // console.log('response: ', response.data);
-        for (let i = 0; i < response.data.length; i += 1) {
-          if (response.data[i].online) {
-            online.push({
-              id: response.data[i].id,
-              username: response.data[i].username,
-            });
+  useFocusEffect(
+    React.useCallback(() => {
+      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${1}`)// configure apiURL in .env
+        .then((response) => {
+          console.log('useEffect', route);
+          const offline = [];
+          const online = [];
+          for (let i = 0; i < response.data.length; i += 1) {
+            if (response.data[i].online) {
+              online.push({
+                id: response.data[i].id,
+                username: response.data[i].username,
+              });
+            } else {
+              offline.push({
+                id: response.data[i].id,
+                username: response.data[i].username,
+              });
+            }
           }
-          offline.push({
-            id: response.data[i].id,
-            username: response.data[i].username,
-          });
-        }
-        friends[1].data = offline;
-        friends[0].data = online;
-        setFriends([...friends]);
-        // console.log(friends);
-      })
-      .catch((err) => {
-        console.log('ERROR :', err.message);
-      });
-  }, []);
+          friends[1].data = offline;
+          friends[0].data = online;
+          setFriends([...friends]);
+        })
+        .catch((err) => {
+          console.log('ERROR :', err.message);
+        });
+    }, []),
+  );
   // console.log('friends: ', friends);
   return !friends[0].data ? null : (
     <View style={styles.container}>
