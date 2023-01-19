@@ -16,8 +16,9 @@ const RightDrawer = createDrawerNavigator();
 
 var {width, height} = Dimensions.get('window');
 
-const ChatScreen = ({server, channel, messages, setMessages}) => {
+const ChatScreen = ({server, channel}) => {
   const { user } = useAuthentication();
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   useEffect(() => {
     axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)

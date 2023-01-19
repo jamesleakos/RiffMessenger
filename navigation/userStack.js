@@ -66,15 +66,13 @@ export default function UserStack({ user }) {
     if (user) {
       setTimeout(() => {
         axios.get(`${Constants.manifest?.extra?.apiUrl}/users/${user.uid}`)
-        .then((response) => {
-          setUserId(response.data.id)
+          .then((response) => {
+            console.log(response.data.id)
+            setUserId(response.data.id)
+          })
           .catch((err) => {
-            console.log('ERROR :', err.message);
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
+            console.log(err);
+          })
       }, 300)
     }
   }, [])
