@@ -30,7 +30,7 @@ const ChatScreen = ({server, channel}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [holdModalVisible, setHoldModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  const [messages, setMessages] = useState(['a', 'b']);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState({})
