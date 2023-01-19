@@ -308,7 +308,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
           />
         </SafeAreaView>
         {/* channel area  */}
-        <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 3, marginHorizontal: 4}}>
+        <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
           <View style={styles.channelArea}>
             <Text style={styles.serverHeader}>{serverName}</Text>
             {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
@@ -462,7 +462,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
         swipeEdgeWidth: width/2,
         headerShown: false,
         drawerStyle: {
-          width: '85%',
+          width: '90%',
           backgroundColor: '#36393e',
         }
       }}>
@@ -582,10 +582,12 @@ const styles = StyleSheet.create({
   },
   // channel area in left drawer
   channelArea: {
-    backgroundColor: 'black',
+    backgroundColor: '#222326',
     height: height,
     borderRadius: '10px',
-    ...padding(10)
+    ...padding(10),
+    marginRight: 10,
+    marginLeft: 7,
   },
   userItem: {
     padding: 10,
