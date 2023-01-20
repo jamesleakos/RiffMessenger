@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   item: {
+    marginHorizontal: 20,
     padding: 10,
     justifyContent: 'center',
     fontSize: 14,
@@ -46,11 +47,10 @@ const styles = StyleSheet.create({
   },
   header: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 22,
     padding: 10,
     width,
     backgroundColor: '#36393e',
-    borderBottomWidth: 1,
     borderColor: '#17181e',
   },
   pageTitle: {
@@ -73,15 +73,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    borderBottomWidth: .5,
+    borderColor: '#fff'
   },
   title: {
     fontSize: 16,
     color: '#fff',
   },
   addFriend: {
+    fontSize: 20,
     position: 'absolute',
     color: '#fff',
-    top: 0,
+    top: -10,
     left: 100,
   },
 });

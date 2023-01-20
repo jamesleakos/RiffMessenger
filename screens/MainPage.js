@@ -72,7 +72,6 @@ const ChatScreen = ({server, channel, channelName}) => {
   }
 
   useEffect(() => {
-    console.log('server is : ' + serverID + ' and channel is ' + channelID);
     socket.on('new_message', updateMessages)
     return () => socket.off('new message')
   }, [ socket ]);
@@ -135,7 +134,7 @@ const ChatScreen = ({server, channel, channelName}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e'}} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-          <Text style={styles.chatTitle}>{'# ' + channelName}</Text>
+          <Text style={styles.chatTitle}>{server === 0 ? '@ ' + channelName : '# ' + channelName}</Text>
           <SelectUsersModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
@@ -161,7 +160,7 @@ const ChatScreen = ({server, channel, channelName}) => {
                   }}
                 >
                   <View>
-              {item.reply ? (<Text style={styles.replyMessage}>{`Reply to: ${messages.find(message => message.id === item.reply).message}`}</Text>) : null}
+              {item.reply ? (<Text style={styles.replyMessage} ellipsizeMode='tail' numberOfLines={2}>{`Reply to ${messages.find(message => message.id === item.reply)?.username}: ${messages.find(message => message.id === item.reply)?.message}`}</Text>) : null}
                 <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
                       <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
                       <View style={styles.textContainer}>
@@ -223,6 +222,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const [modalVisible, setModalVisible] = useState(false);
   const [channels, setChannels] = useState([])
   const [refreshing, setRefreshing] = useState(false);
+  const [serverAdmin, setServerAdmin] = useState();
 
   useEffect(() => {
     loadDms(userId);
@@ -231,6 +231,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const loadChannels = (server) => {
     axios.get(`http://${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
       .then(response => {
+        setServerAdmin(server.admin_id);
         setChannels(response.data);
         setServer(server.id);
         setChannel(response.data[0].id)
@@ -249,17 +250,29 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
       });
   }
 
-  const loadChannel = (channel) => {
-    socket.emit('join_channel', channel.id)
+  const loadChannel = (channel, user_id) => {
+    if (user_id && user_id < channel.id) {
+      socket.emit('join_channel', `DMs ${user_id}${channel.id}` )
+    } else if (user_id && user_id > channel.id) {
+      socket.emit('join_channel', `DMs ${channel.id}${user_id}`)
+    } else {
+      socket.emit('join_channel', channel.id)
+    }
     setChannel(channel.id)
-    setChannelName(channel.channel_name)
+    if (user_id) {
+      setChannelName(channel.username)
+    } else {
+      setChannelName(channel.channel_name)
+    }
     navigation.getParent('LeftDrawer').closeDrawer()
   }
 
   const longPressChannel = (channel) => {
-    setChannelModal(!channelModal)
-    setChannelName(channel.channel_name)
-    setChannel(channel.id)
+    if(serverAdmin === userId) {
+      setChannelModal(!channelModal)
+      setChannelName(channel.channel_name)
+      setChannel(channel.id)
+    }
   }
 
   const loadDms = (id) => {
@@ -358,8 +371,8 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
                       backgroundColor: pressed ? '#494d54' : '#36393e',
                     },
                     styles.item,
-                  ]} onPress={() => loadChannel(friend)}>
-                    <Text style={styles.title}>{friend.username}</Text>
+                  ]} onPress={() => loadChannel(friend, userId)}>
+                    <Text style={styles.title}>{`@ ${friend.username}`}</Text>
                   </Pressable>)
                 })
               )
@@ -593,13 +606,13 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 10,
     marginLeft: 20,
-    fontSize: '20'
+    fontSize: 20
   },
   textSpace: {
     margin: 10,
     ...padding(10),
     backgroundColor: '#222326',
-    borderRadius: '10px'
+    borderRadius: 10
   },
   textContainer: {
     flexDirection: 'column',
@@ -696,7 +709,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     marginBottom: 10,
-    marginHorizontal: 5,
+    marginRight: 20,
   },
   send: {
     color: 'white',
@@ -735,8 +748,9 @@ const styles = StyleSheet.create({
     width: width * .88,
     borderRadius: 30,
     paddingHorizontal: 20,
-    color: '#71757c',
-    marginHorizontal: 10,
+    color: '#fff',
+    marginRight: 10,
+    marginLeft: 20,
     marginBottom: 10,
     width: width*.8
   },
@@ -751,7 +765,8 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems: 'center',
     height: 24,
-    marginBottom: 10
+    marginVertical: 10,
+    borderRadius: 5,
   },
   centeredView: {
     flex: 1,

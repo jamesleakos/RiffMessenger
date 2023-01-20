@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
+    marginBottom: 260,
   },
   container: {
     flex: 1,

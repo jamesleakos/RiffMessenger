@@ -30,7 +30,7 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    backgroundColor: '#36393e',
+    backgroundColor: '#5865f2',
     flex: 1,
     justifyContent: 'flex-start',
   },
@@ -43,17 +43,21 @@ const styles = StyleSheet.create({
     borderColor: '#17181e',
     color: '#fff',
   },
+  page: {
+    backgroundColor: '#36393e',
+    height,
+  },
   header: {
     color: '#fff',
     fontSize: 36,
-    padding: 10,
+    padding: 20,
     width,
-    backgroundColor: '#36393e',
-    borderBottomWidth: 1,
-    borderColor: '#17181e',
+    backgroundColor: '#5865f2',
+    borderBottomWidth: .5,
+    borderColor: '#fff',
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     color: '#fff',
   },
 });
@@ -75,17 +79,18 @@ function Account({ userName }) {
       title: userName,
       data: [
         { text: 'Change Username', action: () => console.log('clicked') },
-        { text: 'Change Email', action: () => console.log('clicked') },
+        // { text: 'Change Email', action: () => console.log('clicked') },
         { text: 'Change Password', action: () => console.log('clicked') },
-        { text: 'Delete Account', action: () => console.log('clicked') },
-        { text: 'View Friend Requests', action: () => console.log('clicked') },
+        // { text: 'Delete Account', action: () => console.log('clicked') },
+        // { text: 'View Friend Requests', action: () => console.log('clicked') },
         { text: 'Sign Out', action: () => handleSignOut() }],
     },
   ]);
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
+      <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1,  }}>
+        <View style={styles.page}>
         <SectionList
           sections={pageData}
           keyExtractor={(item, index) => item + index}
@@ -98,6 +103,7 @@ function Account({ userName }) {
             <Text style={styles.header}>{title}</Text>
           )}
         />
+        </View>
       </SafeAreaView>
     </View>
   );
