@@ -101,7 +101,7 @@ function FriendsPage({ route }) {
   ]);
   useFocusEffect(
     React.useCallback(() => {
-      axios.get(`${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
+      axios.get(`http://${Constants.expoConfig.extra.apiUrl}/friends/${userId}`)// configure apiURL in .env
         .then((response) => {
           const offline = [];
           const online = [];

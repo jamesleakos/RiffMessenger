@@ -120,7 +120,7 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
 
   const handleAddFriendByUsername = () => {
     console.log('userId:', server);
-    axios.post(`${Constants.expoConfig.extra.apiUrl}/friends/username`, { server, username })// server = userId
+    axios.post(`http://${Constants.expoConfig.extra.apiUrl}/friends/username`, { server, username })// server = userId
       .then(() => {
         setUserList(!friendRemoved);
         console.log('succesfully added friend');
@@ -133,11 +133,11 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
   };
 
   const handleInviteUser = () => {
-    axios.post(`${Constants.manifest?.extra?.apiUrl}/servers/${server}`, {
+    axios.post(`http://${Constants.manifest?.extra?.apiUrl}/servers/${server}`, {
       username: username
     })
       .then(() => {
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${server}/users`)
+        axios.get(`http://${Constants.manifest?.extra?.apiUrl}/server/${server}/users`)
           .then(response => {
             setUserList(response.data);
             setInviteModal(!inviteModal);

@@ -23,7 +23,7 @@ const RightDrawer = createDrawerNavigator();
 
 var {width, height} = Dimensions.get('window');
 
-const ChatScreen = ({server, channel}) => {
+const ChatScreen = ({server, channel, channelName}) => {
 
   const userId = React.useContext(UserId);
 
@@ -33,12 +33,14 @@ const ChatScreen = ({server, channel}) => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState({})
+  const [selectedMessage, setSelectedMessage] = useState({id: 0})
   const [showButton, setShowButton] = useState(false);
+  const [serverID, setServerID] = useState(server);
+  const [channelID, setChannelID] = useState(channel);
 
   useEffect(() => {
     if (server === 0) {
-      axios.get(`${Constants.manifest?.extra?.apiUrl}/directmessages/${userId}/${channel}`)
+      axios.get(`http://${Constants.manifest?.extra?.apiUrl}/directmessages/${userId}/${channel}`)
       .then(response => {
         const messageList = Array.isArray(response.data) ? response.data : []
         setMessages(messageList);
@@ -47,7 +49,7 @@ const ChatScreen = ({server, channel}) => {
         console.log('Error in chat screen2 ', error.message);
       });
     } else {
-      axios.get(`${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
+      axios.get(`http://${Constants.manifest?.extra?.apiUrl}/messages/${server}/${channel}`)
       .then(response => {
         setMessages(response.data);
       })
@@ -58,14 +60,25 @@ const ChatScreen = ({server, channel}) => {
 
   }, [channel]);
 
-  useEffect(() => {
-    socket.on('new_message', (message) => {
-      setMessages((messages) => [...messages, message]);
+  const updateMessages = (message) => {
+    setMessages((messages) => {
+      if (messages.findIndex(c => c.id === message.id) === -1)
+      {
+        return [...messages, message];
+      } else {
+        return [...messages];
+      }
     });
+  }
+
+  useEffect(() => {
+    console.log('server is : ' + serverID + ' and channel is ' + channelID);
+    socket.on('new_message', updateMessages)
     return () => socket.off('new message')
   }, [ socket ]);
 
   const sendMessage = () => {
+    let reply_id = selectedMessage["id"];
     if (text === '') return;
     let messageObj;
     if (server === 0) {
@@ -75,11 +88,9 @@ const ChatScreen = ({server, channel}) => {
         channel_id: null,
         user_id: userId,
         recipient_id: channel,
-        reply: null,
+        reply: reply_id,
       }
     } else {
-      console.log(selectedMessage["id"])
-      let reply_id = selectedMessage["id"];
       messageObj = {
         message: text,
         server_id: server,
@@ -124,6 +135,7 @@ const ChatScreen = ({server, channel}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e'}} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
+          <Text style={styles.chatTitle}>{'# ' + channelName}</Text>
           <SelectUsersModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
@@ -149,7 +161,7 @@ const ChatScreen = ({server, channel}) => {
                   }}
                 >
                   <View>
-              {item.reply && <Text style={styles.replyMessage}>{`Reply to: ${messages.find(message => message.id === item.reply).message}`}</Text>}
+              {item.reply ? (<Text style={styles.replyMessage}>{`Reply to: ${messages.find(message => message.id === item.reply).message}`}</Text>) : null}
                 <View style={(selectedMessage.id === item.id && replyEdits) ? styles.selectedMessageContainer : styles.messageContainer}>
                       <Image style={styles.profilePicture} source={{uri: 'https://www.personality-insights.com/wp-content/uploads/2017/12/default-profile-pic-e1513291410505.jpg'}}></Image>
                       <View style={styles.textContainer}>
@@ -217,14 +229,14 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   }, [])
 
   const loadChannels = (server) => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}/channels/${server.id}`)
       .then(response => {
         setChannels(response.data);
         setServer(server.id);
         setChannel(response.data[0].id)
         setChannelName(response.data[0].channel_name)
         setServerName(server.server_name)
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/server/${server.id}/users`)
+        axios.get(`http://${Constants.manifest?.extra?.apiUrl}/server/${server.id}/users`)
           .then(response => {
             setUserList(response.data);
           })
@@ -238,6 +250,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   }
 
   const loadChannel = (channel) => {
+    socket.emit('join_channel', channel.id)
     setChannel(channel.id)
     setChannelName(channel.channel_name)
     navigation.getParent('LeftDrawer').closeDrawer()
@@ -250,7 +263,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   }
 
   const loadDms = (id) => {
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/friends/${id}`)
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}/friends/${id}`)
       .then(response => {
         setChannels(response.data);
         setServer(0);
@@ -276,7 +289,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const onRefresh = () => {
     setRefreshing(true);
     console.log("Getting servers")
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
     .then(response => {
       setServers(response.data);
       setRefreshing(false);
@@ -303,11 +316,11 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         {/* server side bar */}
         <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
           <View style={styles.serverArea}>
-            <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadDms(userId)}>
+            <Pressable key={1} style={(serverName === 'Direct Messages') ? {...styles.server, backgroundColor: '#6246DB'} : styles.server} onPress={() => loadDms(userId)}>
               <Text style={styles.title}>{makeServerIcon('Direct Messages')}</Text>
             </Pressable>
             {servers.map((server) => {
-              return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: 'blue'} : styles.server} onPress={() => loadChannels(server)}>
+              return (<Pressable key={server.id} style={(serverName === server.server_name) ? {...styles.server, backgroundColor: '#6246DB'} : styles.server} onPress={() => loadChannels(server)}>
                 <Text style={styles.title}>{makeServerIcon(server.server_name)}</Text>
               </Pressable>)
             })}
@@ -358,7 +371,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
                     },
                     styles.item,
                   ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
-                    <Text style={styles.title}>{channel.channel_name}</Text>
+                    <Text style={styles.title}>{`# ${channel.channel_name}`}</Text>
                   </Pressable>)
                 })
               )
@@ -467,7 +480,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
 
   const getServers = () => {
     console.log("Getting servers")
-    axios.get(`${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
+    axios.get(`http://${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
     .then(response => {
       setServers(response.data);
     })
@@ -504,6 +517,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus, channelN
   useEffect(() => {
     setDrawerStatus(drawerStatus === 'open')
   }, [drawerStatus])
+
   return (
     <RightDrawer.Navigator
       id="RightDrawer"
@@ -520,7 +534,7 @@ const RightDrawerScreen = ({server, channel, userList, setDrawerStatus, channelN
         }
       }}>
       <RightDrawer.Screen name="HomeDrawer">
-        {(props) => <ChatScreen {...props} server={server} channel={channel} />}
+        {(props) => <ChatScreen {...props} server={server} channel={channel} channelName={channelName} />}
       </RightDrawer.Screen>
     </RightDrawer.Navigator>
   );
@@ -574,6 +588,12 @@ const styles = StyleSheet.create({
   messageContainer: {
     padding: 5,
     flexDirection: 'row',
+  },
+  chatTitle: {
+    color: 'white',
+    marginTop: 10,
+    marginLeft: 20,
+    fontSize: '20'
   },
   textSpace: {
     margin: 10,
@@ -703,7 +723,8 @@ const styles = StyleSheet.create({
     width: width,
     borderRadius: 30,
     paddingHorizontal: 20,
-    color: '#71757c',
+    // color: '#71757c',
+    color: '#fff',
     marginHorizontal: 20,
     marginBottom: 10,
     width: width*.9

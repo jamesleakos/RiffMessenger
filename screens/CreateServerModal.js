@@ -125,7 +125,7 @@ function CreateServerModal({modalVisible, setModalVisible, userId, getServers}) 
       private: false,
       admin_id: userId,
     }
-    axios.post(`${Constants.manifest?.extra?.apiUrl}/servers`, obj)
+    axios.post(`http://${Constants.manifest?.extra?.apiUrl}/servers`, obj)
       .then(() => {
         getServers();
         setServerName('')

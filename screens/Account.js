@@ -58,7 +58,18 @@ const styles = StyleSheet.create({
   },
 });
 
+
+
 function Account({ userName }) {
+  const userId = React.useContext(UserId)
+
+  const handleSignOut = () => {
+    axios.put(`http://${Constants.manifest?.extra?.apiUrl}/users/${userId}`, {
+      online: false
+    })
+    signOut(auth);
+  }
+
   const [pageData, setPageData] = useState([
     {
       title: userName,
@@ -68,7 +79,7 @@ function Account({ userName }) {
         { text: 'Change Password', action: () => console.log('clicked') },
         { text: 'Delete Account', action: () => console.log('clicked') },
         { text: 'View Friend Requests', action: () => console.log('clicked') },
-        { text: 'Sign Out', action: () => signOut(auth) }],
+        { text: 'Sign Out', action: () => handleSignOut() }],
     },
   ]);
 
