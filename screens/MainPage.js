@@ -30,7 +30,7 @@ const ChatScreen = ({server, channel, channelName}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [holdModalVisible, setHoldModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
-  const [messages, setMessages] = useState(['a', 'b']);
+  const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [replyEdits, setReplyEdits] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState({id: 0})
@@ -188,13 +188,13 @@ const ChatScreen = ({server, channel, channelName}) => {
               </View>
             }
           <View style={text.length === 0 ? styles.bottomBar : styles.bottomBar2}>
-            <TextInput
+            {channel !== undefined && <TextInput
               style={ text.length === 0 ? styles.chatBar : styles.chatBar2 }
               value={text}
               onChangeText={handleTextChange}
               placeholder="Type a message..."
               placeholderTextColor="#71757c"
-              />
+              />}
               {showButton && (
                 <TouchableOpacity onPress={sendMessage}>
                   <View style={styles.sendButton}>
@@ -213,7 +213,7 @@ const ChatScreen = ({server, channel, channelName}) => {
   );
 };
 
-const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channelName, setChannelName, setUserList, navigation, setServers}) => {
+const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, channel, channelName, setChannelName, setUserList, navigation, setServers}) => {
   const userId = React.useContext(UserId);
 
   const [serverName, setServerName] = useState('');
@@ -259,6 +259,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
   const longPressChannel = (channel) => {
     setChannelModal(!channelModal)
     setChannelName(channel.channel_name)
+    setChannel(channel.id)
   }
 
   const loadDms = (id) => {
@@ -310,6 +311,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
           channelModal={channelModal}
           setChannelModal={setChannelModal}
           channelName={channelName}
+          channel={channel}
         />
         {/* server side bar */}
         <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
@@ -491,7 +493,7 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
     <LeftDrawer.Navigator
       id="LeftDrawer"
       defaultStatus="open"
-      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} setServers={setServers} />}
+      drawerContent={(props) => <LeftDrawerContent {...props} getServers={getServers} servers={servers} setServer={setServer} server={server} setChannel={setChannel} channel={channel} channelName={channelName} setChannelName={setChannelName} setUserList={setUserList} setServers={setServers} />}
       screenOptions={{
         drawerPosition: 'left',
         drawerType: 'back',
@@ -634,7 +636,7 @@ const styles = StyleSheet.create({
   channelArea: {
     backgroundColor: '#222326',
     height: height,
-    borderRadius: '10px',
+    borderRadius: 10,
     ...padding(10),
     marginRight: 10,
     marginLeft: 7,
