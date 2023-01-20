@@ -15,6 +15,8 @@ const auth = getAuth();
 
 var width = Dimensions.get('window').width;
 
+// Constants.manifest?.extra?.apiUrl}/users
+
 export default function SignUp({ navigation }) {
 
   const [value, setValue] = React.useState({
@@ -36,7 +38,7 @@ export default function SignUp({ navigation }) {
     try {
       const {user} = await createUserWithEmailAndPassword(auth, value.email, value.password);
       console.log('posting to users');
-      const res = await axios.post(`${Constants.manifest?.extra?.apiUrl}/users`, {
+      const res = await axios.post(`http://${Constants.manifest?.extra?.apiUrl}/users`, {
         username: value.username,
         firebase_id: user.uid
       });

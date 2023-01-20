@@ -119,12 +119,12 @@ function CreateChannelModal({createChannelModal, setCreateChannelModal, server, 
   const [channelName, setChannelName] = useState('');
 
   const handleCreateChannel = () => {
-    axios.post(`${Constants.manifest?.extra?.apiUrl}/channels`, {
+    axios.post(`http://${Constants.manifest?.extra?.apiUrl}/channels`, {
       channel_name: channelName,
       server_id: server,
     })
       .then(() => {
-        axios.get(`${Constants.manifest?.extra?.apiUrl}/channels/${server}`)
+        axios.get(`http://${Constants.manifest?.extra?.apiUrl}/channels/${server}`)
           .then(response => {
             //loadChannels();
             setCreateChannelModal(!createChannelModal);
