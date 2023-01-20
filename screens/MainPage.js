@@ -306,6 +306,13 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
     .then(response => {
       setServers(response.data);
       setRefreshing(false);
+      axios.get(`http://${Constants.manifest?.extra?.apiUrl}/channels/${server}`)
+        .then((response) => {
+          setChannels(response.data);
+        })
+        .catch((error) => {
+          console.log('Error refreshing channels', error.message)
+        })
     })
     .catch(error => {
       console.log('Error getting servers ', error.message);
