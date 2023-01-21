@@ -31,12 +31,14 @@ Riff is a messaging application built for mobile, inspired by Slack. Users chat 
 - Join the public 'Welcome' server to meet new friends
 - Create your own private servers that you can invite friends into by username
 - Create channels within each server
-- If you are the admin of the channel, long hold to rename or delete the channel
+- If have created the server, long hold to rename or delete any channel
 - Chat amongst your community by posting messages in channels
-- Press on users to add them to you friends list
+- Long hold on any message to reply in the chat
 - See the online status of everyone in the channel and all of your friends
+- Press on users to add them to your friends list
 - Add friends by username or remove them in your friends list
-- Sign out of your account
+- Once you have added friends you can send them a private message
+- Once you're done, go to the account page and sign out of your account
 
 ## Team Members
 - Christopher Wong (Project Manager)
