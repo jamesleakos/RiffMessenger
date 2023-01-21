@@ -14,6 +14,7 @@ import CreateServerModal from './CreateServerModal';
 import CreateChannelModal from './CreateChannelModal';
 import InviteUserModal from './InviteUserModal';
 import HoldMessageModal from './HoldMessageModal';
+import { AntDesign } from 'react-native-vector-icons';
 
 import { UserId } from '../utils/hooks/context'
 import { BottomTabBarHeightCallbackContext } from '@react-navigation/bottom-tabs';
@@ -134,7 +135,7 @@ const ChatScreen = ({server, channel, channelName}) => {
   return (
     <KeyboardAvoidingView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#36393e'}} behavior={Platform.OS === 'ios' ? 'padding' : ''}>
        <SafeAreaView style={SafeViewAndroid.AndroidSafeArea}>
-          <Text style={styles.chatTitle}>{server === 0 ? '@ ' + channelName : '# ' + channelName}</Text>
+          <Text style={styles.chatTitle}>{server === 0 ? '@ ' + (channelName || 'Add Friends to start a DM') : '# ' + channelName}</Text>
           <SelectUsersModal
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
@@ -301,7 +302,6 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
 
   const onRefresh = () => {
     setRefreshing(true);
-    console.log("Getting servers")
     axios.get(`http://${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
     .then(response => {
       setServers(response.data);
@@ -358,12 +358,12 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
         {/* channel area  */}
         <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 4, marginHorizontal: 4}}>
           <View style={styles.channelArea}>
-            <Text style={styles.serverHeader}>{serverName}</Text>
-            {server !== 0 ? <TouchableOpacity style={styles.inviteButton} onPress={() => setInviteModal(true)}>
-              <Text>
-                Invite User
-              </Text>
-            </TouchableOpacity> : null}
+            <View style={styles.titleAddUser}>
+              <Text style={styles.serverHeader}>{serverName}</Text>
+              {server !== 0 ? <TouchableOpacity style={{paddingTop: 5}}onPress={() => setInviteModal(true)}>
+                  <AntDesign name="adduser" size={20} color="white" />
+              </TouchableOpacity> : null}
+            </View>
             <InviteUserModal
               inviteModal={inviteModal}
               setInviteModal={setInviteModal}
@@ -375,7 +375,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
                 channels.map((friend) => {
                   return (<Pressable key={friend.id} style={({pressed}) => [
                     {
-                      backgroundColor: pressed ? '#494d54' : '#36393e',
+                      backgroundColor: pressed ? '#494d54' : '#222326',
                     },
                     styles.item,
                   ]} onPress={() => loadChannel(friend, userId)}>
@@ -387,7 +387,7 @@ const LeftDrawerContent = ({getServers, servers, setServer, server, setChannel, 
                 channels.map((channel) => {
                   return (<Pressable key={channel.id} style={({pressed}) => [
                     {
-                      backgroundColor: pressed ? '#494d54' : '#36393e',
+                      backgroundColor: pressed ? '#494d54' : '#222326',
                     },
                     styles.item,
                   ]} onPress={() => loadChannel(channel)} onLongPress={() => longPressChannel(channel)}>
@@ -446,7 +446,7 @@ const RightDrawerContent = ({userList, channelName, server}) => {
     },
   ];
   return (
-    <View style={{display: 'flex', flex: 1, alignItems: 'flex-start', marginHorizontal: 16}}>
+    <View style={{display: 'flex', flex: 1, alignItems: 'flex-start', ...padding(10, 30, 10, 10)}}>
       <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, flex: 1}}>
         <SelectUsersModal
             modalVisible={modalVisible}
@@ -499,7 +499,6 @@ const LeftDrawerScreen = ({setDrawerStatus, navigation}) => {
   }, [])
 
   const getServers = () => {
-    console.log("Getting servers")
     axios.get(`http://${Constants.manifest?.extra?.apiUrl}/servers/${userId}`)
     .then(response => {
       setServers(response.data);
@@ -608,6 +607,7 @@ const styles = StyleSheet.create({
   messageContainer: {
     padding: 5,
     flexDirection: 'row',
+    paddingHorizontal: 10,
   },
   chatTitle: {
     color: 'white',
@@ -617,7 +617,7 @@ const styles = StyleSheet.create({
   },
   textSpace: {
     margin: 10,
-    ...padding(10),
+    ...padding(10, 30, 10, 10),
     backgroundColor: '#222326',
     borderRadius: 10
   },
@@ -626,14 +626,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   username: {
-    color: '#fff',
+    color: '#A1A8F4',
+    fontWeight: 'bold',
   },
   topLine: {
     flexDirection: 'row',
   },
   timestamp: {
     color: '#71757c',
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     fontSize: 12,
   },
   // server stuff
@@ -666,7 +667,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     fontSize: 14,
     height: 50,
-    width,
+    width: width / 1.25,
     borderBottomWidth: 1,
     borderColor: '#17181e',
     color: '#fff',
@@ -816,6 +817,11 @@ const styles = StyleSheet.create({
   replyMessage: {
     color: 'white',
     marginHorizontal: 45,
+    marginTop: 10,
+  },
+  titleAddUser: {
+    flexDirection: "row",
+    justifyContent: 'space-between',
   }
 });
 

@@ -8,7 +8,6 @@ import { getAuth, signOut } from 'firebase/auth';
 import { LogBox } from 'react-native';
 
 LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core']);
-LogBox.ignoreAllLogs();
 
 export default function RootNavigation() {
   // const auth = getAuth();

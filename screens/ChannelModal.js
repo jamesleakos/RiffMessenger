@@ -51,6 +51,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    borderTopWidth: 1,
+    borderColor: '#fff',
   },
   button: {
     borderRadius: 5,
@@ -66,7 +68,9 @@ const styles = StyleSheet.create({
   buttonInteractive: {
     height: 100,
     margin: 10,
-    backgroundColor: '#17181e',
+    backgroundColor: '#5865f2',
+    borderWidth: 1,
+    borderColor: '#fff',
     flex: 1,
   },
   buttonClose: {

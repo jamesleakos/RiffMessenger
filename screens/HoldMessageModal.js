@@ -107,10 +107,15 @@ const styles = StyleSheet.create({
   subheader: {
     color: '#71757c'
   },
-  buttonText: {
-    color: '#fff'
-  }
-
+  replybutton: {
+    backgroundColor: '#5865f2',
+    justifyContent:'center',
+    alignItems: 'center',
+    height: 30,
+    marginVertical: 10,
+    borderRadius: 5,
+    width: width * .8,
+  },
 });
 
 function HoldMessageModal({holdModalVisible, setHoldModalVisible, setReplyEdits}) {
@@ -124,7 +129,7 @@ function HoldMessageModal({holdModalVisible, setHoldModalVisible, setReplyEdits}
 
   return !holdModalVisible ? null : (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={holdModalVisible}
       onRequestClose={() => {
@@ -148,8 +153,8 @@ function HoldMessageModal({holdModalVisible, setHoldModalVisible, setReplyEdits}
         >
             <View style={styles.modalView}>
               <Text style={styles.modalTitle}>Options</Text>
-                <Pressable onPress={() => handleReply()}>
-                  <Text style={styles.buttonText}>Reply</Text>
+                <Pressable style={styles.replybutton} onPress={() => handleReply()}>
+                  <Text>Reply</Text>
                 </Pressable>
                 {/* <Pressable onPress={() => handleCreateServer()}>
                   <Text style={styles.buttonText}>DM</Text>

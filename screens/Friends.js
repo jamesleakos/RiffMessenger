@@ -30,7 +30,7 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
-    backgroundColor: '#36393e',
+    backgroundColor: '#5865f2',
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   topBar: {
-    backgroundColor: '#36393e',
+    backgroundColor: '#5865f2',
     width,
     height: 60,
     display: 'flex',
@@ -81,11 +81,16 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   addFriend: {
-    fontSize: 20,
+    fontSize: 36,
+    fontWeight: 'bold',
     position: 'absolute',
     color: '#fff',
-    top: -10,
+    top: -25,
     left: 100,
+  },
+  page: {
+    backgroundColor: '#36393e',
+    height,
   },
 });
 
@@ -136,8 +141,9 @@ function FriendsPage({ route }) {
       <SafeAreaView style={{ ...SafeViewAndroid.AndroidSafeArea, flex: 1 }}>
         <View style={styles.topBar}>
           <Text style={styles.pageTitle}>Friends</Text>
-          <TouchableOpacity><Text style={styles.addFriend} onPress={() => setAddFriendModal(!addFriendModal)}>Add</Text></TouchableOpacity>
+          <TouchableOpacity><Text style={styles.addFriend} onPress={() => setAddFriendModal(!addFriendModal)}>+</Text></TouchableOpacity>
         </View>
+        <View style={styles.page}>
         <InviteUserModal
           inviteModal={addFriendModal}
           setInviteModal={setAddFriendModal}
@@ -177,6 +183,7 @@ function FriendsPage({ route }) {
           )}
           stickySectionHeadersEnabled
         />
+         </View>
       </SafeAreaView>
     </View>
   );

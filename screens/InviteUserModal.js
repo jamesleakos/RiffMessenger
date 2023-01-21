@@ -155,7 +155,7 @@ function InviteUserModal({inviteModal, setInviteModal, server, setUserList, isFr
 
   return !inviteModal ? null : (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={inviteModal}
       onRequestClose={() => {

@@ -77,6 +77,7 @@ export default function SignUp({ navigation }) {
           value={value.username}
           onChangeText={(text) => setValue({ ...value, username: text })}
           style={{color: 'white'}}
+          maxLength='15'
           // leftIcon={<Icon
           //   name='envelope'
           //   size={16}

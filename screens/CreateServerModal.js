@@ -138,7 +138,7 @@ function CreateServerModal({modalVisible, setModalVisible, userId, getServers}) 
 
   return !modalVisible ? null : (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={modalVisible}
       onRequestClose={() => {
