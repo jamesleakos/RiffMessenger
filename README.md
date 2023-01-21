@@ -1,7 +1,7 @@
 # RiffServer
 
 ## Description
-Riff is a social networking mobile application that connects people together through instant messaging.
+Riff is a messaging application built for mobile, inspired by Slack. Users chat with others in shared servers across a number of topic specific channels. They can also directly message other users.
 
 <p float="left">
   <img src="https://user-images.githubusercontent.com/37193140/213892222-1e7017a4-b04a-4de1-b9c9-672c5da93c24.gif" width="240" height="500"/>
@@ -25,7 +25,7 @@ Riff is a social networking mobile application that connects people together thr
 1. In your postgreSQL command line, run '/i 'INSERT_YOUR_FILE_PATH/RiffServer/server/database/schema.sql''
 
 ## Features
-- Register for an account to login and secure it will be secured through firebase authentification
+- Register for an account to login, secured through firebase authentification
 - Join the public 'Welcome' server to meet new friends
 - Create your own private servers that you can invite friends into by username
 - Create channels within each server
