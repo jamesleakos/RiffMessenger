@@ -19,10 +19,12 @@ Riff is a messaging application built for mobile, inspired by Slack. Users chat 
 
 ## Installation
 1. git clone from both RiffMessenger and RiffServer repos
-1. Follow the directions of the RiffMessenger Read Me
-1. Install PostgreSQL following the instructions here https://www.postgresql.org/download/
 1. In your terminal, run 'npm install'
-1. In your postgreSQL command line, run '/i 'INSERT_YOUR_FILE_PATH/RiffServer/server/database/schema.sql''
+1. Create a firebase account
+1. Make a copy of the "example.env" file and name it ".env". Follow the file instruction and enter your firebase and API information. Place this file into the project's root directory
+1. In your terminal, run 'npm start'
+1. Follow the RiffServer repo instructions
+1. The first registered user will be the admin of the public Welcome server
 
 ## Features
 - Register for an account to login, secured through firebase authentification
