@@ -14,7 +14,7 @@ Riff is a messaging application built for mobile, inspired by Slack. Users chat 
 - [Features](#features)
 - [Team Members](#team-members)
 
-# Repo Structure
+## Repo Structure
 [RiffMessenger](https://github.com/BlueOceanDevelopment/RiffMessenge) is the front end. [RiffServer](https://github.com/BlueOceanDevelopment/RiffServer) is the back end.
 
 ## Installation
