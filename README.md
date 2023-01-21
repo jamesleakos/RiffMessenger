@@ -1,39 +1,40 @@
-# Riff
+# RiffServer
 
-# Repo Structure
-[RiffMessenger](https://github.com/BlueOceanDevelopment/RiffMessenge) is the front end. [RiffServer](https://github.com/BlueOceanDevelopment/RiffServer) is the back end.
+## Description
+Riff is a social networking mobile application that connects people together through instant messaging.
+
+<p float="left">
+  <img src="https://user-images.githubusercontent.com/37193140/213892222-1e7017a4-b04a-4de1-b9c9-672c5da93c24.gif" width="240" height="500"/>
+  <img src="https://user-images.githubusercontent.com/37193140/213892264-dd976a2a-108c-430a-b350-47b6586b5914.gif" width="240" height="500"/>
+</p>
 
 ## Table of Contents
-- [Description](#description)
+- [Repo Structure](#repo-structure)
 - [Installation](#installation)
 - [Features](#features)
 - [Team Members](#team-members)
 
-## Description
-Riff is a messaging application built for mobile, inspired by Slack. Users chat with others in shared servers across a number of topic specific channels. They can also directly message other users.
+# Repo Structure
+[RiffMessenger](https://github.com/BlueOceanDevelopment/RiffMessenge) is the front end. [RiffServer](https://github.com/BlueOceanDevelopment/RiffServer) is the back end.
 
 ## Installation
 1. git clone from both RiffMessenger and RiffServer repos
+1. Follow the directions of the RiffMessenger Read Me
+1. Install PostgreSQL following the instructions here https://www.postgresql.org/download/
 1. In your terminal, run 'npm install'
-1. Create a firebase account
-1. Make a copy of the "example.env" file and name it ".env". Follow the file instruction and enter your firebase and API information. Place this file into the project's root directory
-1. In your terminal, run 'npm start'
-1. Follow the RiffServer repo instructions
-1. The first registered user will be the admin of the public Welcome server
+1. In your postgreSQL command line, run '/i 'INSERT_YOUR_FILE_PATH/RiffServer/server/database/schema.sql''
 
 ## Features
-- Register for an account to login, secured through firebase authentification
+- Register for an account to login and secure it will be secured through firebase authentification
 - Join the public 'Welcome' server to meet new friends
 - Create your own private servers that you can invite friends into by username
 - Create channels within each server
-- If have created the server, long hold to rename or delete any channel
+- If you are the admin of the channel, long hold to rename or delete the channel
 - Chat amongst your community by posting messages in channels
-- Long hold on any message to reply in the chat
+- Press on users to add them to you friends list
 - See the online status of everyone in the channel and all of your friends
-- Press on users to add them to your friends list
 - Add friends by username or remove them in your friends list
-- Once you have added friends you can send them a private message
-- Once you're done, go to the account page and sign out of your account
+- Sign out of your account
 
 ## Team Members
 - Christopher Wong (Project Manager)
