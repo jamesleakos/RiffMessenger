@@ -15,6 +15,8 @@ import HomeScreen from '../screens/Home.js';
 import MainPage from '../screens/MainPage.js'
 import FriendScreen from '../screens/Friends';
 import AccountScreen from '../screens/Account';
+
+// import socket from '../utils/hooks/socket';
 // import DirectMessageScreen from '../screens/DirectMessage.js';
 
 const Stack = createStackNavigator();
@@ -43,6 +45,7 @@ export default function UserStack({ user }) {
             // console.log(response.data.id)
             setUserId(response.data.id);
             setUserName(response.data.username);
+            // socket.emit(socket.emit('join_channel', 1))
             axios.put(`http://${Constants.manifest?.extra?.apiUrl}/users/${response.data.id}`, {
               online: true
             })

@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
   header: {
     color: '#fff',
     fontSize: 36,
-    padding: 20,
+    paddingLeft: 30,
+    padding: 10,
     width,
     backgroundColor: '#5865f2',
     borderBottomWidth: .5,

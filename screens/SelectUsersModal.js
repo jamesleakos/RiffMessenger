@@ -24,30 +24,33 @@ const styles = StyleSheet.create({
   modalOverlay: {
     position: 'absolute',
     display: 'flex',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    // backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
     display: 'flex',
     backgroundColor: '#36393e',
     borderRadiusTop: 20,
-    height: height / 2,
-    padding: 10,
+    height: 300,
+    padding: 20,
     width,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
+    borderTopWidth: 1,
+    borderColor: '#fff',
   },
   button: {
     borderRadius: 5,
@@ -63,7 +66,9 @@ const styles = StyleSheet.create({
   buttonInteractive: {
     height: 100,
     margin: 10,
-    backgroundColor: '#17181e',
+    backgroundColor: '#5865f2',
+    borderWidth: 1,
+    borderColor: '#fff',
     flex: 1,
   },
   buttonClose: {
@@ -139,7 +144,7 @@ function SelectUsersModal({
           directionalLockEnabled
           // centerContent={true}
           contentInset={{
-            top: height / 2, left: 0, bottom: 0, right: 0,
+            top: height, left: 0, bottom: 0, right: 0,
           }}
           onScrollEndDrag={() => setModalVisible(!modalVisible)}
         >

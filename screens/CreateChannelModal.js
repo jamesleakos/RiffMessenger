@@ -142,7 +142,7 @@ function CreateChannelModal({createChannelModal, setCreateChannelModal, server, 
 
   return !createChannelModal ? null : (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent
       visible={createChannelModal}
       onRequestClose={() => {
