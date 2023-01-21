@@ -1,4 +1,4 @@
-# RiffServer
+# RiffMessenger
 
 ## Description
 Riff is a messaging application built for mobile, inspired by Slack. Users chat with others in shared servers across a number of topic specific channels. They can also directly message other users.
