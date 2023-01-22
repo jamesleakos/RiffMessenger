@@ -46,9 +46,9 @@ Riff is a messaging application built for mobile, inspired by Slack. Users chat 
 - Once you're done, go to the account page and sign out of your account
 
 ## Team Members
-- Christopher Wong (Project Manager)
-- Jonathan Sindorf [LinkedIn](https://www.linkedin.com/in/jonathan-sindorf-a6a646118/) [github](https://github.com/sindwarf)
 - James Leakos
+- Christopher Wong
+- Jonathan Sindorf
 - Jake Alexander
 - Christopher Garcia
 - Robert Hu
